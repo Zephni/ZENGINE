@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="ZEngine.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			document.addEventListener("DOMContentLoaded", function(){
+				ZEngine.Initialise({Width: 600, Height: 300, FPS: 60});
+
+				var Test = new ZEngineObject(function(){
+					this.Data = {Speed: 6};
+					
+					this.Sprite = this.AddComponent("Sprite", {Src: "http://kwiksher.com/wp-content/uploads/2012/09/runningcat.png", RectWidth: 512, RectHeight: 256});
+					this.Sprite.Animate({Frames: [[0,0],[1,0],[0,1],[1,1],[0,2],[1,2],[0,3],[1,3]]});
+					
+					this.Transform.Offset = [-0.5, -0.5];
+					this.Transform.Position = [-100, ZEngine.Canvas.height/2];
+					this.Transform.Size = [200, 100];
+
+					this.Update = function(){
+						this.Transform.position[0] += this.Data.Speed;
+						if(this.Transform.position[0] > ZEngine.Canvas.width + (this.Transform.Size[0]/2))
+							this.Transform.position[0] = -(this.Transform.Size[0]/2);
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
