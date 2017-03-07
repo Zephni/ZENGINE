@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
+				var RunningCat = new ZEngineObject(function(){
+					this.Prefab = true;
+					this.Data = {
+						RunningAnim: {Frames: [[0,0],[1,0],[0,1],[1,1],[0,2],[1,2],[0,3],[1,3]]}
+					};
+					
+					this.AddComponent("Sprite", {Src: "assets/RunningCat.png", RectWidth: 512, RectHeight: 256}).Animate(this.Data.RunningAnim);
+					this.Transform.Size = [200, 100];
+
+					this.Update = function(){
+						this.Transform.position[0] += this.Data.Speed;
+						if(this.Transform.position[0] > ZEngine.Canvas.width) this.Transform.position[0] = -this.Transform.Size[0];
+					}
+				});
+
+				RunningCat.Create(function(){
+					this.Data.Speed = 6;
+					this.Transform.Position = [-250, ZEngine.Canvas.height/5];
+				});
+
+				RunningCat.Create(function(){
+					this.Data.Speed = 8;
+					this.Transform.Position = [0, ZEngine.Canvas.height/3];
+					this.GetComponent("Sprite").Animation.CurrentFrame = 2;
+				});
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>Prefabs explained</h2>
+
+			<p>A <code>Prefab</code> is a "template" object that isn't created instantly onto the canvas. To create a prefab, when initialising and object set the Prefab property to true:</p>
+
+			<codeblock>
+				APrefabObject = new ZEngineObject(function(){<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;this.Prefab = true;<br />
+				});
+			</codeblock>
+
+			<p>Now to create that object you can use:</p>
+
+			<codeblock>
+				APrefabObject.Create();
+			</codeblock>
+
+			<p>This is handy for many reasons, one because a developer can create multiples of the same object without redefining it each time. Also objects can all be defined in one place, stored in
+				an object and called when needed, this helps with code management and will help you only have the "meaningfull" code in your scenes.</p>
+
+			<p>It doesn't end there! The <code>Create</code> method doesn't only belong to prefabs, it will work with any ZEngineObject, and can be extended any number of times. In other words if you wanted to add
+				more functionality to your APrefabObject you could do so with the below:</p>
+
+			<codeblock>
+				var ABetterObject = APrefabObject.Create(function(){<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;// Other functionality<br />
+				});
+			</codeblock>
+
+			<p>The ABetterObject would have everything the APrefabObject had, and the extra stuff you passed when creating a new object from it. This is similar to a object orientated class system, using
+			extended classes.</p>
+		</div>
+	</body>
+</html>

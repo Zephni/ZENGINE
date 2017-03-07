@@ -7,68 +7,110 @@ ZEngine = function(){}
 
 // Properties
 ZEngine.Config = {
-	Width: 500,
-	Height: 500,
-	FPS: 60
+	Width: 580,
+	Height: 300,
+	FPS: 60,
+	Path: "ZEngine",
+	Canvas: null
 };
 
+ZEngine.Prefabs = [];
 ZEngine.Objects = [];
 
 ZEngine.Canvas = null;
 
 // Methods
-ZEngine.Initialise = function(Config = null)
+ZEngine.Initialise = function(Config = null, Init = null)
 {
-	for(var I in Config)
-		ZEngine.Config[I] = Config[I];
+	var DomReadyInterval = setInterval(function(){
+		if(document.readyState === "complete" || document.readyState === "loaded"){
+			clearInterval(DomReadyInterval);
 
-	// Build canvas
-	ZEngine.Canvas = document.createElement("canvas");
-	ZEngine.Canvas2D = ZEngine.Canvas.getContext("2d");
-	ZEngine.Canvas.width = ZEngine.Config.Width;
-	ZEngine.Canvas.height = ZEngine.Config.Height;
-	ZEngine.Canvas.style["border"] = "1px solid black";
-	document.querySelector("body").appendChild(ZEngine.Canvas);
+			for(var I in Config)
+				ZEngine.Config[I] = Config[I];
 
-	// Global vars
-	ZEngine.Paused = false;
+			// Build canvas
+			if(ZEngine.Config.Canvas == null) ZEngine.Canvas = document.createElement("canvas");
+			else ZEngine.Canvas = document.querySelector(ZEngine.Config.Canvas);
+			
+			ZEngine.Canvas2D = ZEngine.Canvas.getContext("2d");
+			ZEngine.Canvas.width = ZEngine.Config.Width;
+			ZEngine.Canvas.height = ZEngine.Config.Height;
+			ZEngine.Canvas.style["border"] = "1px solid #AAAAAA";
 
-	// Run
-	setInterval(function(){
-		if(ZEngine.Ready){
-			ZEngine.Canvas2D.fillStyle = "#FFFFFF";
-			ZEngine.Canvas2D.fillRect(0, 0, ZEngine.Canvas.offsetWidth, ZEngine.Canvas.offsetHeight);
+			if(ZEngine.Config.Canvas == null)
+				document.querySelector("body").appendChild(ZEngine.Canvas);
 
-			for(var I in ZEngine.Objects)
-			{
-				for(var C in ZEngine.Objects[I].components)
-					if(ZEngine.Objects[I].components[C].Update !== undefined)
-						ZEngine.Objects[I].components[C].Update();
-				
-				if(ZEngine.Objects[I].Update != null)
-					ZEngine.Objects[I].Update();
+			// Global vars
+			ZEngine.Ready = false;
+			ZEngine.Paused = false;
+
+			// Run
+			setInterval(function(){
+				if(ZEngine.Ready && !ZEngine.Paused){
+					ZEngine.Canvas2D.fillStyle = "#EEEEEE";
+					ZEngine.Canvas2D.fillRect(0, 0, ZEngine.Canvas.offsetWidth, ZEngine.Canvas.offsetHeight);
+
+					for(var I in ZEngine.Objects)
+					{
+						for(var C in ZEngine.Objects[I].components)
+							if(ZEngine.Objects[I].components[C].Update !== undefined)
+								ZEngine.Objects[I].components[C].Update();
+
+						if(ZEngine.Objects[I].Update != null)
+							ZEngine.Objects[I].Update();
+					}
+				}
+			}, 1000 / ZEngine.Config.FPS);
+
+			// Loading splash
+			var LoadingSplash = document.createElement("img");
+			LoadingSplash.src = ZEngine.Config.Path+"/ZEngineLoading.png";
+			var LSwidth, LSheight = null;
+			LoadingSplash.onload = function(){
+				if(LoadingSplash != null){
+					LSwidth = ZEngine.Canvas.width/2;
+					LSheight = (LoadingSplash.height * LSwidth / LoadingSplash.width);
+				}
 			}
-		}
-	}, 1000 / ZEngine.Config.FPS);
+			// /Loading splash
 
-	var LoadingInterval = setInterval(function(){
-		// Loading update
-		ZEngine.Canvas2D.font = "32px Arial";
-		ZEngine.Canvas2D.textAlign = "center";
-		ZEngine.Canvas2D.fillStyle = "#333333";
-		ZEngine.Canvas2D.fillText("LOADING", ZEngine.Canvas.width/2, ZEngine.Canvas.height/2);
-		// Loading update
+			var LoadingInterval = setInterval(function(){
+				var NumReady = 0;
+				var CheckObjects = [].concat(ZEngine.Objects, ZEngine.Prefabs);
 
-		for(var I in ZEngine.Objects)
-		{
-			if(ZEngine.Objects[I].HasComponent("Sprite") && ZEngine.Objects[I].GetComponent("Sprite").Ready)
-			{
-				ZEngine.Ready = true;
-				clearInterval(LoadingInterval);
-			}
-		}
+				for(var I in CheckObjects)
+				{
+					if(CheckObjects[I].HasComponent("Sprite") && CheckObjects[I].GetComponent("Sprite").Ready)
+						NumReady++;
 
-	}, 1);
+					if(NumReady >= CheckObjects.length)
+					{
+						ZEngine.Ready = true;
+						LoadingSplash = null;
+						clearInterval(LoadingInterval);
+					}
+				}
+
+				//console.log(NumReady + "/" + CheckObjects.length);
+
+				// Loading update
+				ZEngine.Canvas2D.fillStyle = "#FFFFFF";
+				ZEngine.Canvas2D.fillRect(0, 0, ZEngine.Canvas.offsetWidth, ZEngine.Canvas.offsetHeight);
+				if(LSwidth !== null && LoadingSplash != null){
+					ZEngine.Canvas2D.drawImage(LoadingSplash, 0, 0, LoadingSplash.width, LoadingSplash.height, ZEngine.Canvas.width/2 - LSwidth/2, ZEngine.Canvas.height/2 - LSheight/2 - 20, LSwidth, LSheight);
+					var PercentLoaded = parseInt(NumReady / CheckObjects.length * 100);
+					ZEngine.Canvas2D.font = "20px Arial"; ZEngine.Canvas2D.fillStyle = "#222222"; ZEngine.Canvas2D.textAlign = "center";
+					ZEngine.Canvas2D.fillText("loading assets: "+PercentLoaded +"%",  ZEngine.Canvas.width/2,  ZEngine.Canvas.height/2 + LSheight/4);
+				}
+				// /Loading update
+
+			}, 1);
+
+			if(Init != null)
+				Init();
+		};
+	}, 0); 
 }
 
 /*
@@ -76,8 +118,12 @@ ZEngine.Initialise = function(Config = null)
 */
 ZEngineObject = function(Init = null)
 {
-	this.init = Init;
+	if(Init != false) this.init1 = Init;
 	this.components = {};
+
+	// User properties
+	this.Prefab = false;
+	this.Data = {};
 
 	// Standard components
 	this.components["Transform"] = new ZEngineComponents["Transform"]();
@@ -86,9 +132,15 @@ ZEngineObject = function(Init = null)
 	// Custom methods
 	this.Update = null;
 
-	// Initiation function
-	if(this.init != null) this.init();
-	ZEngine.Objects.push(this);
+	// Initiation function (Ready by default, components will set to non ready if needed)
+	this.Ready = true;
+	if(this.init1 != null) this.init1();
+
+	if(Init != false){
+		if(this.Prefab) ZEngine.Prefabs.push(this);
+		else ZEngine.Objects.push(this);
+	}
+	
 	return this;
 }
 
@@ -106,6 +158,24 @@ ZEngineObject.prototype.HasComponent = function(Alias)
 ZEngineObject.prototype.GetComponent = function(Alias)
 {
 	return this.components[Alias];
+}
+
+ZEngineObject.prototype.Create = function(Init = null)
+{
+	var NewObject = new ZEngineObject(this.init1);
+
+	if(Init != null){
+		var I = 1; while(NewObject["init"+I] !== undefined){
+			if(NewObject["init"+(I+1)] === undefined){
+				NewObject["init"+(I+1)] = Init;
+				NewObject["init"+(I+1)]();
+				break;
+			}
+		I++;}
+	}
+
+	ZEngine.Objects.push(NewObject);
+	return NewObject;
 }
 
 /*
@@ -147,11 +217,10 @@ ZEngineComponents.Sprite = function(Obj, Data){
 		this.Animation = {Frames: [], Speed: 10, CurrentFrame: 0, Iterator: 0};
 		for(var I in animation) this.Animation[I] = animation[I];
 	}
-
+	
 	// Update
 	this.Update = () => {
-		if(this.Animation != null)
-		{
+		if(this.Animation != null){
 			this.Animation.Iterator++
 			if(this.Animation.Iterator >= ZEngine.Config.FPS / this.Animation.Speed) {this.Animation.CurrentFrame++; this.Animation.Iterator = 0;}
 			if(this.Animation.CurrentFrame >= this.Animation.Frames.length) {this.Animation.CurrentFrame = 0;}
@@ -174,18 +243,4 @@ ZEngineComponents.Sprite = function(Obj, Data){
 			);
 		}
 	}
-}
-
-// Debug
-ZEngineComponents.Debug = function(Obj){
-	this.Update = function()
-	{
-		var Transform = Obj.GetComponent("Transform");
-		ZEngine.Canvas2D.beginPath();
-		ZEngine.Canvas2D.rect(Transform.Position[0], Transform.Position[1], Transform.Size[0], Transform.Size[1]);
-		ZEngine.Canvas2D.stroke();
-		ZEngine.Canvas2D.closePath();
-	}
-
-	return this;
 }

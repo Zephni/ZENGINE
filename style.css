@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css?family=Oswald');
+body {font-family: "verdana"; color: #323232; font-size: 16px;}
+h1,h2,h3,h4,h5 {font-family: "Oswald";}
+h1 {font-size: 52px; text-align: center;}
+h2 {font-size: 26px; margin-bottom: 0px;}
+p {line-height: 24px;}
+a:hover, h1:hover {cursor: pointer;}
+a {text-decoration: none; color: #323232;}
+li a {color: #323232; }
+li::first-letter {font-weight: bold; color: #0190FF; padding-right: 1px;}
+li {padding: 5px 0;}
+iframe {width: 600px; height: 630px; border: 1px solid #CCCCCC; font-family: "verdana"; font-size: 16px;}
+codeblock {padding: 4px 6px 7px 6px; background: #323232; color: white; opacity: 0.8; border-style: border-box; width: 96%; display: block;}
+code {padding: 1px 5px 2px 4px; background: #323232; color: white; opacity: 0.8; border-style: border-box; border-radius: 5px;}
+#main {max-width: 960px; padding: 10px; margin: auto; position: relative; overflow: auto;}
+#left {width: 270px; float: left;}
+#right {width: 620px; float: right;}
+#info {height: 300px; overflow-y: auto; overflow-x: hidden; margin-top: 10px;}

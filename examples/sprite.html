@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
+
+				// Creates new ZEngineObject
+				new ZEngineObject(function(){					
+
+					// Adds the sprite component
+					this.AddComponent("Sprite", {
+						Src: "assets/RunningCat.png", // Source image file
+						RectX: 0,					  // Rectangle of image source (X position). If not set 0 is assumed
+						RectY: 0,					  // Rectangle of image source (Y position). If not set 0 is assumed
+						RectWidth: 512, 			  // Rectangle of image source (Width). If not set 0 full image width is assumed
+						RectHeight: 256 			  // Rectangle of image source (Height). If not set 0 full image height is assumed
+					});
+				});
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>Sprite example</h2>
+
+			<p>ZEngine objects use components to make them special, one of these is the "Sprite" component. To add a sprite component use the following code:</p>
+			<codeblock>Obj.AddComponent("Sprite", {Src: "filename.png"});</codeblock>
+
+			<p>You can display just a rectangle of the source image by using the following parameters in the option list:</p>
+			<codeblock>
+				Obj.AddComponent("Sprite", {<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;Src: "assets/RunningCat.png",<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;RectX: 0,<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;RectY: 0,<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;RectWidth: 512,<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;RectHeight: 256<br />
+				});
+			</codeblock>
+
+			<p><code>RectX</code> and <code>RectY</code> will set the begining position of the rectangle to obstract from the image.</p>
+			<p><code>RectWidth</code> and <code>RectHeight</code> will set the width and height of the rectangle to obstract.</p>
+
+		</div>
+	</body>
+</html>

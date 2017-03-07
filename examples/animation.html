@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
+				new ZEngineObject(function(){
+					this.Data = {
+						RunningAnim: {Frames: [[0,0],[1,0],[0,1],[1,1],[0,2],[1,2],[0,3],[1,3]]}
+					};
+					
+					this.AddComponent("Sprite", {Src: "assets/RunningCat.png", RectWidth: 512, RectHeight: 256}).Animate(this.Data.RunningAnim);
+				});
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>Animation example</h2>
+
+			<p>Animating is very simple with ZEngineObject's. Any sprite that has both or one of <code>RectWidth</code> or <code>RectHeight</code> is a candidate for animation. The rect width and height
+				would normally be the size of a single frame from a sprite sheet.</p>
+
+			<p>To animate a sprite just call the <code>.Animate()</code> method on a <code>Sprite</code> component. The Animate method must be passed an <code>Animation</code> object, which could look something like the below: </p>
+
+			<codeblock>
+				var AnAnimation = {Frames: [[0,0],[1,0],[2,0]]}
+			</codeblock>
+
+			<p>You could either pass the object in directly, or save it to the objects <code>.Data</code> property. You would call the animation something like the below:</p>
+
+			<codeblock>
+				ASpriteComponent.Animate(AnAnimation);
+			</codeblock>
+
+			<p>You can check this page out "examples/animation.html" to see the code running above.</p>
+		</div>
+
+	</body>
+</html>

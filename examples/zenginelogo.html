@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
+				new ZEngineObject(function(){
+					this.Transform.Offset = [-0.5, -0.5];
+					this.Transform.Position = [ZEngine.Canvas.width/2, ZEngine.Canvas.height/2];
+					this.Transform.Size = [350, 350];
+					this.AddComponent("Sprite", {Src: "assets/ZEngineLogo.png"});
+				});
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<h2>Let's get going</h2>
+		<p>ZEngine is running above, but there isn't happening yet. Select an option from the left to see some of ZEngines capabilities.</p>
+		<p>Be sure to check the code in the examples folder to dig deeper!</p>
+	</body>
+</html>
