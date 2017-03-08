@@ -16,10 +16,11 @@
 				FallingObject = new ZEngineObject(function(){
 					this.Transform.Size = [32, 32];
 					this.Transform.Position[1] = 100;
-					var Collider = this.AddComponent("Collider",  {ShowOutline: true});
+					this.AddComponent("Sprite", {Src: "assets/Box.png"});
+					var Collider = this.AddComponent("Collider");
 				
 					this.Update = function(){
-						if(!Collider.CollidingWith(Floor))
+						if(!Collider.CollidingWith(Floor, [0, 1]))
 							this.Transform.Position[1] += 1;
 					}
 				});

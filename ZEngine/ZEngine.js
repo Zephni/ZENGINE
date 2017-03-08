@@ -271,7 +271,7 @@ ZEngineComponents.Collider = function(Obj, Data){
 			this.Rect[3] + 1 + CheckAhead[1]
 		];
 		var OtherRect = Other.GetComponent("Collider").Rect;
-		return ThisRect[0] < OtherRect[2] && ThisRect[2] > OtherRect[0] && ThisRect[1] < OtherRect[3] && ThisRect[1] + Transform.Size[1] > OtherRect[1];
+		return ThisRect[0] < OtherRect[2] && ThisRect[2] > OtherRect[0] && ThisRect[1] < OtherRect[3] && ThisRect[3] > OtherRect[1];
 	}
 
 	this.Update = function(){
@@ -290,8 +290,8 @@ Object.defineProperty(ZEngineComponents.Collider.prototype, "Rect", {
 		return [
 			this.Obj.Transform.BoundingBox[0] + (this.Obj.Transform.Size[0] * this.Config.Offset[0]),
 			this.Obj.Transform.BoundingBox[1] + (this.Obj.Transform.Size[1] * this.Config.Offset[1]),
-			this.Obj.Transform.BoundingBox[2] - (this.Obj.Transform.Size[0] * this.Config.Offset[0]),
-			this.Obj.Transform.BoundingBox[3] - (this.Obj.Transform.Size[1] * this.Config.Offset[1])
+			this.Obj.Transform.BoundingBox[2] - (this.Obj.Transform.Size[0] * this.Config.Offset[2]),
+			this.Obj.Transform.BoundingBox[3] - (this.Obj.Transform.Size[1] * this.Config.Offset[3])
 		];
 	}
 });
