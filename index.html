@@ -13,33 +13,43 @@
 				<ol>
 					<li><a href="examples/sprite.html">Sprite</a></li>
 					<li><a href="examples/animation.html">Animation</a></li>
-					<li><a href="examples/movement.html">Positioning/Movement</a></li>
 				</ol>
 
-				<h2>ZEngine / ZEngineObject</h2>
+				<h2>ZEngine</h2>
 				<ol>
 					<li><a href="examples/initialise.html">Initialising ZEngine</a></li>
+				</ol>
+
+				<h2>ZEngineObject</h2>
+				<ol>
 					<li><a href="examples/prefabs.html">Prefabs</a></li>
+					<li><a href="examples/movement.html">Positioning/Movement</a></li>
+					<li><a href="examples/collision.html">Collision</a></li>
 				</ol>
 			</div>
 			
 			<div id="right">
-				<iframe src="examples/sprite.html"></iframe>
+				<iframe src="examples/sprite.html" onload="resizeIframe(this);"></iframe>
 			</div>
-
 		</div>
 
 		<script type="text/javascript">
 			[].forEach.call(document.querySelectorAll("li a"), function(item) {
 				item.addEventListener("click", function(e){
 					e.preventDefault();
-					document.querySelector("iframe").src = item.href;
+					var iframe = document.querySelector("iframe");
+					iframe.src = item.href;
 				});
 			});
 
 			document.querySelector("h1").addEventListener("click", function(e){
 				location.reload();
 			});
+
+			function resizeIframe(obj) {
+				obj.style.height = 0;
+				obj.style.height = (obj.contentWindow.document.body.scrollHeight + 20) + 'px';
+			}
 		</script>
 	</body>
 </html>

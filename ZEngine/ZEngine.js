@@ -83,6 +83,8 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				for(var I in CheckObjects)
 					if(CheckObjects[I].HasComponent("Sprite") && CheckObjects[I].GetComponent("Sprite").Ready)
 						NumReady++;
+					else
+						NumReady++;
 
 				if(NumReady >= CheckObjects.length)
 				{
@@ -189,6 +191,15 @@ ZEngineComponents.Transform = function Transform(Obj){
 	this.Size = [0, 0];
 }
 
+Object.defineProperty(ZEngineComponents.Transform.prototype, "BoundingBox", {
+	get: function(){return [
+		this.Position[0] - (this.Size[0] * this.Offset[0]),
+		this.Position[1] - (this.Size[1] * this.Offset[1]),
+		this.Position[0] + (this.Size[0] * this.Offset[0]),
+		this.Position[1] + (this.Size[1] * this.Offset[1])
+	];}
+});
+
 // Sprite
 ZEngineComponents.Sprite = function(Obj, Data){
 	// Setup
@@ -214,6 +225,7 @@ ZEngineComponents.Sprite = function(Obj, Data){
 	
 	// Update
 	this.Update = () => {
+
 		if(this.Animation != null){
 			this.Animation.Iterator++
 			if(this.Animation.Iterator >= ZEngine.Config.FPS / this.Animation.Speed) {this.Animation.CurrentFrame++; this.Animation.Iterator = 0;}
@@ -230,11 +242,56 @@ ZEngineComponents.Sprite = function(Obj, Data){
 				this.Rect[1],
 				(this.Rect[2] > 0) ? this.Rect[2] : this.Img.width,
 				(this.Rect[3] > 0) ? this.Rect[3] : this.Img.height,
-				Transform.Position[0] - (Transform.Size[0] * Transform.Offset[0]),
-				Transform.Position[1] - (Transform.Size[1] * Transform.Offset[1]),
+				Transform.BoundingBox[0],
+				Transform.BoundingBox[1],
 				Transform.Size[0],
 				Transform.Size[1]
 			);
 		}
 	}
 }
+
+ZEngineComponents.Collider = function(Obj, Data){
+	this.Obj = Obj;
+
+	this.Config = {
+		Offset: [0, 0, 0, 0],
+		ShowOutline: false,
+		OutlineColor: "#FF0000"
+	}
+	for(var I in Data) this.Config[I] = Data[I];
+
+	var Transform = this.Obj.GetComponent("Transform");
+	
+	this.CollidingWith = function(Other, CheckAhead = [0, 0]){
+		var ThisRect = [
+			this.Rect[0] + 1 + CheckAhead[0],
+			this.Rect[1] + 1 + CheckAhead[1],
+			this.Rect[2] + 1 + CheckAhead[0],
+			this.Rect[3] + 1 + CheckAhead[1]
+		];
+		var OtherRect = Other.GetComponent("Collider").Rect;
+		return ThisRect[0] < OtherRect[2] && ThisRect[2] > OtherRect[0] && ThisRect[1] < OtherRect[3] && ThisRect[1] + Transform.Size[1] > OtherRect[1];
+	}
+
+	this.Update = function(){
+		if(this.Config.ShowOutline){
+			ZEngine.Canvas2D.beginPath();
+			ZEngine.Canvas2D.rect(this.Rect[0], this.Rect[1], this.Rect[2] - this.Rect[0], this.Rect[3] - this.Rect[1]);
+			ZEngine.Canvas2D.strokeStyle = this.Config.OutlineColor;
+			ZEngine.Canvas2D.lineWidth = 1;
+			ZEngine.Canvas2D.stroke();
+		}
+	}
+}
+
+Object.defineProperty(ZEngineComponents.Collider.prototype, "Rect", {
+	get: function(){
+		return [
+			this.Obj.Transform.BoundingBox[0] + (this.Obj.Transform.Size[0] * this.Config.Offset[0]),
+			this.Obj.Transform.BoundingBox[1] + (this.Obj.Transform.Size[1] * this.Config.Offset[1]),
+			this.Obj.Transform.BoundingBox[2] - (this.Obj.Transform.Size[0] * this.Config.Offset[0]),
+			this.Obj.Transform.BoundingBox[3] - (this.Obj.Transform.Size[1] * this.Config.Offset[1])
+		];
+	}
+});
