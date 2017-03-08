@@ -11,38 +11,30 @@
 			<div id="left">
 				<h2>Graphical</h2>
 				<ol>
-					<li><a href="examples/sprite.html">Sprite</a></li>
-					<li><a href="examples/animation.html">Animation</a></li>
+					<li><a href="?examples/sprite">Sprite</a></li>
+					<li><a href="?examples/animation">Animation</a></li>
 				</ol>
 
 				<h2>ZEngine</h2>
 				<ol>
-					<li><a href="examples/initialise.html">Initialising ZEngine</a></li>
+					<li><a href="?examples/initialise">Initialising ZEngine</a></li>
 				</ol>
 
 				<h2>ZEngineObject</h2>
 				<ol>
-					<li><a href="examples/components.html">Components</a></li>
-					<li><a href="examples/prefabs.html">Prefabs</a></li>
-					<li><a href="examples/movement.html">Positioning/Movement</a></li>
-					<li><a href="examples/collision.html">Collision</a></li>
+					<li><a href="?examples/components">Components</a></li>
+					<li><a href="?examples/prefabs">Prefabs</a></li>
+					<li><a href="?examples/movement">Positioning/Movement</a></li>
+					<li><a href="?examples/collision">Collision</a></li>
 				</ol>
 			</div>
 			
 			<div id="right">
-				<iframe src="examples/sprite.html" onload="resizeIframe(this);"></iframe>
+				<iframe src="" onload="resizeIframe(this);"></iframe>
 			</div>
 		</div>
 
 		<script type="text/javascript">
-			[].forEach.call(document.querySelectorAll("li a"), function(item) {
-				item.addEventListener("click", function(e){
-					e.preventDefault();
-					var iframe = document.querySelector("iframe");
-					iframe.src = item.href;
-				});
-			});
-
 			document.querySelector("h1").addEventListener("click", function(e){
 				location.reload();
 			});
@@ -51,6 +43,10 @@
 				obj.style.height = 0;
 				obj.style.height = (obj.contentWindow.document.body.scrollHeight + 20) + 'px';
 			}
+
+			var path = window.location.href.split("?")[1];
+			if(path === undefined || path == "") path = "examples/sprite";
+			document.querySelector("iframe").src = path+".html";
 		</script>
 	</body>
 </html>

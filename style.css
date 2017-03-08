@@ -12,8 +12,8 @@ li {padding: 5px 0;}
 iframe {width: 700px; border: none; font-family: "verdana"; font-size: 16px; overflow: hidden;}
 codeblock {padding: 4px 6px 7px 6px; background: #323232; color: white; opacity: 0.8; border-style: border-box; width: 96%; display: block;}
 code {padding: 1px 5px 2px 4px; background: #323232; color: white; opacity: 0.8; border-style: border-box; border-radius: 5px;}
-#main {max-width: 1080px; padding: 10px; margin: auto; position: relative; overflow: auto;}
+#main {max-width: 1080px; padding: 10px; margin: auto; position: relative; overflow: hidden;}
 #left {width: 270px; float: left;}
-#right {width: 720px; float: right; padding-left: 60px; border-left: 2px solid #CCCCCC;}
+#right {width: 720px; float: right; padding-left: 60px; border-left: 2px solid #CCCCCC; overflow: hidden;}
 #info {overflow-x: hidden; margin-top: 10px;}
 #ZEngineCanvas {position: relative; left: 50%; margin-left: -300px; width: 580px; height: 300px;}
