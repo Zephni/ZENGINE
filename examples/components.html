@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<div id="info">
+			<h2>ZEngineObject Components</h2>
+
+			<p>A <code>Component</code> can be attached to a ZEngine object. It can dynamically control the object itself and has it's own Update method that will be called every frame before the
+				actual object update. Certain components are defined as part of ZEngine like <code>Transform</code> and <code>Sprite</code>. Check the components list to see pre set components.</p>
+
+			<p>To add a component to an object or get a component from an object use the following respectively:</p>
+
+			<codeblock>
+				this.AddComponent("AComponent");<br />
+				this.GetComponent("AComponent");
+			</codeblock>
+
+			<p>You can create your own components by extending the global <code>ZEngineComponents</code> object. The standard template for a component would something like this:</p>
+
+			<codeblock>
+				ZEngineComponents.MyComponent = function(Obj, Data){<br />
+				&nbsp;&nbsp;&nbsp;&nbsp;// Component setup<br />
+				}<br />
+			</codeblock>
+
+			<p>The <code>Obj</code> parameter will be the object that the component belongs to, and <code>Data</code> will be a parameter passed along when adding the component that can be used to customise it.</p>
+		</div>
+	</body>
+</html>
