@@ -17,19 +17,19 @@
 					this.Transform.Size = [200, 100];
 
 					this.Update = function(){
-						this.Transform.position[0] += this.Data.Speed;
-						if(this.Transform.position[0] > ZEngine.Canvas.width) this.Transform.position[0] = -this.Transform.Size[0];
+						this.Transform.Position[0] += this.Data.Speed;
+						if(this.Transform.Position[0] > ZEngine.Canvas.width + this.Transform.Size[0]/2) this.Transform.Position[0] = -this.Transform.Size[0];
 					}
 				});
 
 				RunningCat.Create(function(){
 					this.Data.Speed = 6;
-					this.Transform.Position = [-250, ZEngine.Canvas.height/5];
+					this.Transform.Position = [-125, ZEngine.Canvas.height/3];
 				});
 
 				RunningCat.Create(function(){
 					this.Data.Speed = 8;
-					this.Transform.Position = [0, ZEngine.Canvas.height/3];
+					this.Transform.Position = [0, ZEngine.Canvas.height/2];
 					this.GetComponent("Sprite").Animation.CurrentFrame = 2;
 				});
 			});
@@ -40,7 +40,7 @@
 		<div id="info">
 			<h2>Prefabs explained</h2>
 
-			<p>A <code>Prefab</code> is a "template" object that isn't created instantly onto the canvas. To create a prefab, when initialising and object set the Prefab property to true:</p>
+			<p>A <code>Prefab</code> is a "template" object that isn't created instantly onto the canvas. To create a prefab set the Prefab property to true when initialising an object:</p>
 
 			<codeblock>
 				APrefabObject = new ZEngineObject(function(){<br />
@@ -55,7 +55,7 @@
 			</codeblock>
 
 			<p>This is handy for many reasons, one because a developer can create multiples of the same object without redefining it each time. Also objects can all be defined in one place, stored in
-				an object and called when needed, this helps with code management and will help you only have the "meaningfull" code in your scenes.</p>
+				somewhere and then called when needed, this helps a great deal with code management.</p>
 
 			<p>It doesn't end there! The <code>Create</code> method doesn't only belong to prefabs, it will work with any ZEngineObject, and can be extended any number of times. In other words if you wanted to add
 				more functionality to your APrefabObject you could do so with the below:</p>
@@ -68,6 +68,8 @@
 
 			<p>The ABetterObject would have everything the APrefabObject had, and the extra stuff you passed when creating a new object from it. This is similar to a object orientated class system, using
 			extended classes.</p>
+
+			<p>Check out the code for this page in "examples/prefabs.html" to see how this example was made.</p>
 		</div>
 	</body>
 </html>

@@ -1,0 +1,47 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<div id="info" style="height: 610px;">
+			<h2>Initialising ZEngine</h2>
+
+			<p>This is an easy one! You can initialise ZEngine a few different ways, but the simplest is to just pass a query selector that belongs to a canvas element:</p>
+
+			<codeblock>ZEngine.Initialise({Canvas: "#ZEngineCanvas"});</codeblock>
+
+			<p>Your HTML should have this somewhere so ZEngine knows where to put it:</p>
+
+			<codeblock>&#x3C;canvas id=&#x22;ZEngineCanvas&#x22;&#x3E;&#x3C;/canvas&#x3E;</codeblock>
+
+			<p>Another way to initialise ZEngine is to pass it a parent element:</p>
+
+			<codeblock>ZEngine.Initialise({Parent: "#ZEngineParent"});</codeblock>
+
+			<p>This would look for the #ZEngineParent element and "inject" a new canvas into that area.</p>
+
+			<p>By default ZEngine has a strange canvas size.. this is because in almost every case you will want to set your own anyway, and we wouldn't want to assume what size you like best!
+				So to choose the size you can use the aptly named <code>Width</code> and <code>Height</code> options:</p>
+
+			<codeblock>ZEngine.Initialise({Canvas: "#ZEngineCanvas", Width: 800, Height: 600});</codeblock>
+
+			<p>Simple huh! Lastly, another very handy thing about initialising ZEngine is you do not need to worry about the DOM being loaded, because it will check this first anyway, another handy
+				use of the <code>Initialise</code> method is you can pass a second parameter that will only be called after the DOM is ready, so you might want to put all your ZEngine related code
+				in here for a number of reasons. Here is a typical initalisation in production:</p>
+
+			<codeblock>
+				ZEngine.Initialise({Path: "/some_directory/ZEngine", FPS: 60, Canvas: "#ZEngineCanvas"}, () => {
+					// All your ZEngine code, and maybe more?
+				});
+			</codeblock>
+
+			<p>Notice two more options here, <code>Path</code> will need to be a path from the calling page to the directory that <code>ZEngine.js</code> is stored in, by default ZEngine will assume the
+				path to just be in the "ZEngine" directory in the same location as the page being used.</p>
+
+			<p>Secondly we have the <code>FPS</code> option, by default this is set to 60, which will mean every 1000 JavaScript ticks <code>Update</code> methods will be called 60 times.</p>
+
+		</div>
+	</body>
+</html>

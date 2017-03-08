@@ -13,12 +13,14 @@
 						RunningAnim: {Frames: [[0,0],[1,0],[0,1],[1,1],[0,2],[1,2],[0,3],[1,3]]}
 					};
 					
-					this.AddComponent("Sprite", {Src: "assets/RunningCat.png", RectWidth: 512, RectHeight: 256}).Animate(this.Data.RunningAnim);
 					this.Transform.Size = [200, 100];
+					this.Transform.Position = [-this.Transform.Size[0]/2, ZEngine.Canvas.height/2];
+					
+					this.AddComponent("Sprite", {Src: "assets/RunningCat.png", RectWidth: 512, RectHeight: 256}).Animate(this.Data.RunningAnim);
 
 					this.Update = function(){
-						this.Transform.position[0] += this.Data.Speed;
-						if(this.Transform.position[0] > ZEngine.Canvas.width) this.Transform.position[0] = -this.Transform.Size[0];
+						this.Transform.Position[0] += this.Data.Speed;
+						if(this.Transform.Position[0] > ZEngine.Canvas.width + this.Transform.Size[0]/2) this.Transform.Position[0] = -this.Transform.Size[0];
 					}
 				});
 			});
@@ -31,28 +33,17 @@
 
 			<p>Positioning with ZEngineObject's is simple, as every object automatically adds a <code>Transform</code> component that handles all positioning for you.</p>
 
-			<p>Each object assigns <code>.Transform</code> as quick property to access the component.</p>
+			<p>Each object assigns <code>Transform</code> as a quick access property to the component.</p>
 
 			<p>There are 3 main properties in the transform component:</p>
 
 			<codeblock>
-				Position = [0, 0],
-				Offset   = [0, 0],
-				Size     = [32, 32]
+				this.Transform.Position = [0, 0];<br />
+				this.Transform.Offset   = [0, 0];<br />
+				this.Transform.Size     = [32, 32];
 			</codeblock>
 
-			<p>All these properties are an array of two values, the first representing an <code>X</code> and the second the <code>Y</code> value.</p>
-
-			<p>Note <code>Position</code> has something a little special about it. As when calling it the position represented by the <code>Offset</code> will be returned. If you need get/set the position without
-				the offset you can use <code>position</code> (lower case Position).</p>
-
-			<p>If you wanted to move an object in a single axes, you would want to use something like the following example:</p>
-
-			<codeblock>
-				this.Transform.position[0] += 1;
-			</codeblock>
-
-			<p>This would move this object along it's X axis by 1 every frame</p>
+			<p>All these properties are a point value (an array of two numeric values), representing the <code>X</code> and <code>Y</code> position respectively.</p>
 
 			<p>To see how the above example is working check out the "examples/movement.html" file.</p>
 

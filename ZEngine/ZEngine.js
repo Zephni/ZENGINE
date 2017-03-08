@@ -11,7 +11,8 @@ ZEngine.Config = {
 	Height: 300,
 	FPS: 60,
 	Path: "ZEngine",
-	Canvas: null
+	Canvas: null,
+	Parent: null
 };
 
 ZEngine.Prefabs = [];
@@ -38,8 +39,8 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			ZEngine.Canvas.height = ZEngine.Config.Height;
 			ZEngine.Canvas.style["border"] = "1px solid #AAAAAA";
 
-			if(ZEngine.Config.Canvas == null)
-				document.querySelector("body").appendChild(ZEngine.Canvas);
+			if(ZEngine.Config.Parent != null)
+				document.querySelector(ZEngine.Config.Parent).appendChild(ZEngine.Canvas);
 
 			// Global vars
 			ZEngine.Ready = false;
@@ -80,16 +81,14 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				var CheckObjects = [].concat(ZEngine.Objects, ZEngine.Prefabs);
 
 				for(var I in CheckObjects)
-				{
 					if(CheckObjects[I].HasComponent("Sprite") && CheckObjects[I].GetComponent("Sprite").Ready)
 						NumReady++;
 
-					if(NumReady >= CheckObjects.length)
-					{
-						ZEngine.Ready = true;
-						LoadingSplash = null;
-						clearInterval(LoadingInterval);
-					}
+				if(NumReady >= CheckObjects.length)
+				{
+					ZEngine.Ready = true;
+					LoadingSplash = null;
+					clearInterval(LoadingInterval);
 				}
 
 				//console.log(NumReady + "/" + CheckObjects.length);
@@ -185,15 +184,10 @@ ZEngineComponents = function(){}
 
 // Transform
 ZEngineComponents.Transform = function Transform(Obj){
-	this.position = [0, 0]; // Use .Position (get/set) for position with offset
-	this.Offset = [0, 0];
+	this.Position = [ZEngine.Canvas.width/2, ZEngine.Canvas.height/2];
+	this.Offset = [0.5, 0.5];
 	this.Size = [0, 0];
 }
-
-Object.defineProperty(ZEngineComponents.Transform.prototype, "Position", {
-	get: function() {return [this.position[0] + (this.Size[0] * this.Offset[0]), this.position[1] + (this.Size[1] * this.Offset[1])]},
-	set: function(value) {this.position = value;}
-});
 
 // Sprite
 ZEngineComponents.Sprite = function(Obj, Data){
@@ -236,8 +230,8 @@ ZEngineComponents.Sprite = function(Obj, Data){
 				this.Rect[1],
 				(this.Rect[2] > 0) ? this.Rect[2] : this.Img.width,
 				(this.Rect[3] > 0) ? this.Rect[3] : this.Img.height,
-				Transform.Position[0],
-				Transform.Position[1],
+				Transform.Position[0] - (Transform.Size[0] * Transform.Offset[0]),
+				Transform.Position[1] - (Transform.Size[1] * Transform.Offset[1]),
 				Transform.Size[0],
 				Transform.Size[1]
 			);

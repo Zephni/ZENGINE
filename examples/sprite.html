@@ -7,18 +7,8 @@
 	<body>
 		<script type="text/javascript">
 			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
-
-				// Creates new ZEngineObject
 				new ZEngineObject(function(){					
-
-					// Adds the sprite component
-					this.AddComponent("Sprite", {
-						Src: "assets/RunningCat.png", // Source image file
-						RectX: 0,					  // Rectangle of image source (X position). If not set 0 is assumed
-						RectY: 0,					  // Rectangle of image source (Y position). If not set 0 is assumed
-						RectWidth: 512, 			  // Rectangle of image source (Width). If not set 0 full image width is assumed
-						RectHeight: 256 			  // Rectangle of image source (Height). If not set 0 full image height is assumed
-					});
+					this.AddComponent("Sprite", {Src: "assets/ZEngineLogo.png"});
 				});
 			});
 		</script>
@@ -28,10 +18,10 @@
 		<div id="info">
 			<h2>Sprite example</h2>
 
-			<p>ZEngine objects use components to make them special, one of these is the "Sprite" component. To add a sprite component use the following code:</p>
-			<codeblock>Obj.AddComponent("Sprite", {Src: "filename.png"});</codeblock>
+			<p>ZEngine objects use components to make them special, one of these is the "Sprite" component. To add a sprite component to the current object you can use the <code>AddComponent</code> method:</p>
+			<codeblock>this.AddComponent("Sprite", {Src: "filename.png"});</codeblock>
 
-			<p>You can display just a rectangle of the source image by using the following parameters in the option list:</p>
+			<p>You can display just a section of the source image by using the following <code>Rect</code> parameters in the option list:</p>
 			<codeblock>
 				Obj.AddComponent("Sprite", {<br />
 					&nbsp;&nbsp;&nbsp;&nbsp;Src: "assets/RunningCat.png",<br />
@@ -42,8 +32,10 @@
 				});
 			</codeblock>
 
-			<p><code>RectX</code> and <code>RectY</code> will set the begining position of the rectangle to obstract from the image.</p>
-			<p><code>RectWidth</code> and <code>RectHeight</code> will set the width and height of the rectangle to obstract.</p>
+			<p><code>RectX</code> and <code>RectY</code> will set the begining position of the rectangle to include from the image.</p>
+			<p><code>RectWidth</code> and <code>RectHeight</code> will set the width and height of the rectangle to include.</p>
+			
+			<p>Note by default all of the <code>Rect</code> properties will default to show the entire image.</p>
 
 		</div>
 	</body>
