@@ -342,8 +342,7 @@ ZEngineComponents.Physics = function(Obj, Data){
 		Gravity: 0.3,
 		MaxX: 3,
 		MaxY: 7
-	};
-	for(var I in Data) this.Config[I] = Data[I];
+	}; for(var I in Data) this.Config[I] = Data[I];
 
 	var Transform = this.Obj.GetComponent("Transform");
 	var Collider = this.Obj.AddComponent("Collider", {ShowOutline: true});
@@ -356,31 +355,31 @@ ZEngineComponents.Physics = function(Obj, Data){
 	// Update
 	this.Update = () => {
 		if(!this.Config.Kinetic){
-			this.MoveY += this.Config.Gravity;
-			if(this.MoveX < -this.Config.MaxX) this.MoveX = -this.Config.MaxX;
-			if(this.MoveX > this.Config.MaxX) this.MoveX = this.Config.MaxX;
-			if(this.MoveY < -this.Config.MaxY) this.MoveY = -this.Config.MaxY;
-			if(this.MoveY > this.Config.MaxY) this.MoveY = this.Config.MaxY;
+			// Apply gravity if not grounded
+			if(!this.IsGrounded) this.MoveY += this.Config.Gravity;
 
+			// Clamp MoveX/Y values to MaxX/Y
+			this.MoveX = Math.min(Math.max(this.MoveX, -this.Config.MaxX), this.Config.MaxX);
+			this.MoveY = Math.min(Math.max(this.MoveY, -this.Config.MaxY), this.Config.MaxY);
+
+			// Get collider objects
 			var ColliderObjects = ZEngine.ObjectsWithComponent("Collider", this.Obj);
-			for(var I in ColliderObjects){
-				if(this.MoveY > 0)
-				{
-					if(Collider.CollidingWith(ColliderObjects[I], [0, 1])){
-						this.IsGrounded = true;
-						this.MoveY = 0;
-					}else if(Collider.CollidingWith(ColliderObjects[I], [0, this.MoveY])) this.MoveY = 1;
-				}
-				if(this.MoveY < 0){
-					if(!Collider.CollidingWith(ColliderObjects[I], [0, 1])) this.IsGrounded = false;
-					if(Collider.CollidingWith(ColliderObjects[I], [0, -1])) this.MoveY = 0; else if(Collider.CollidingWith(ColliderObjects[I], [0, this.MoveY])) this.MoveY = -1;
-				}
-				if(this.MoveX > 0) if(Collider.CollidingWith(ColliderObjects[I], [1, 0])) this.MoveX = 0; else if(Collider.CollidingWith(ColliderObjects[I], [this.MoveX, 0])) this.MoveX = 1;
-				if(this.MoveX < 0) if(Collider.CollidingWith(ColliderObjects[I], [-1, 0])) this.MoveX = 0; else if(Collider.CollidingWith(ColliderObjects[I], [this.MoveX, 0])) this.MoveX = -1;
+
+			// X move
+			for(var X = 0; X < Math.abs(this.MoveX); X++){
+				for(var I in ColliderObjects) if(Collider.CollidingWith(ColliderObjects[I], [(this.MoveX > 0) ? 1 : -1, 0])) this.MoveX = 0;
+				if(this.MoveX != 0) Transform.Position[0] += (this.MoveX > 0) ? 1 : -1;
+			}
+			
+			// Y move
+			for(var Y = 0; Y < Math.abs(this.MoveY); Y++){ 
+				for(var I in ColliderObjects) if(Collider.CollidingWith(ColliderObjects[I], [0, (this.MoveY > 0) ? 1 : -1])) this.MoveY = 0;
+				if(this.MoveY != 0) Transform.Position[1] += (this.MoveY > 0) ? 1 : -1;
 			}
 
-			if(this.MoveX != 0) Transform.Position[0] += this.MoveX;
-			if(this.MoveY != 0) Transform.Position[1] += this.MoveY;
+			// Check if grounded
+			this.IsGrounded = false;
+			for(var I in ColliderObjects) if(Collider.CollidingWith(ColliderObjects[I], [0, 1])) this.IsGrounded = true;
 		}
 	}
 }
@@ -394,8 +393,7 @@ ZEngineComponents.CharacterController = function(Obj, Data){
 		Acceleration: 0.2,
 		Deceleration: 0.2,
 		JumpStrength: 50
-	};
-	for(var I in Data) this.Config[I] = Data[I];
+	}; for(var I in Data) this.Config[I] = Data[I];
 
 	var Physics = this.Obj.AddComponent("Physics");
 
