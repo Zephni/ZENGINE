@@ -379,9 +379,11 @@ ZEngineComponents.Physics = function(Obj, Data){
 				if(this.MoveY != 0) Transform.Position[1] += (this.MoveY > 0) ? 1 : -1;
 			}
 
-			// Check if grounded
+			// Check if grounded, or too deep in ground
 			this.IsGrounded = false;
-			for(var I in ColliderObjects) if(Collider.CollidingWith(ColliderObjects[I], [0, 1])) this.IsGrounded = true;
+			for(var I in ColliderObjects){
+				if(Collider.CollidingWith(ColliderObjects[I], [0, 1])) this.IsGrounded = true;
+			}
 		}
 	}
 }
