@@ -1,0 +1,67 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
+				Obstical = new ZEngineObject(function(){
+					this.Transform.Size = [600, 50];
+					this.Transform.Position = [ZEngine.Canvas.width/2, 250];
+					this.AddComponent("Physics", {Kinetic: true});
+				});
+
+				Platform = new ZEngineObject(function(){
+					this.Transform.Size = [100, 32];
+					this.Transform.Position = [ZEngine.Canvas.width/2 + 100, 160];
+					this.AddComponent("Physics", {Kinetic: true});
+				});
+
+				PObject = new ZEngineObject(function(){
+					this.Transform.Size = [32, 32];
+					this.Transform.Position[1] = 0;
+					var CharacterController = this.AddComponent("CharacterController", {});			
+				});
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>Character Controller / Physics</h2>
+
+			<p>Try using your arrow keys and the "Z" key to move about the box above.</p>
+			
+			<p>The <code>CharacterController</code> component uses the <code>Physics</code> component and makes a controllable character with keyboard input.</p>
+
+			<p>When <code>Physics</code> is added to an object it will naturally provide gravity and collision detection very easily with any other collider object. Note that when dealing with
+				an object that has <code>Physics</code>, incremental movements should be implemented with the <code>MoveX</code> and <code>MoveY</code> properties. These will move the object in
+				the specified direction and check collisions properly, in other words a object will not "clip" through other colliders when moving along.</p>
+
+
+			<p>The <code>CharacterController</code> supports the following options when initiating:</p>
+
+			<codeblock>
+				Acceleration: 0.2,<br />
+				Deceleration: 0.2,<br />
+				JumpStrength: 50
+			</codeblock>
+
+			And you can access further related properties within the <code>Physics</code> component:
+
+			<codeblock>
+				Kinetic: false,<br />
+				Gravity: 0.3,<br />
+				MaxX: 3,<br />
+				MaxY: 7
+			</codeblock>
+
+			<p>Other than <code>Kinetic</code> the above properties should be fairly self explanatory. If <code>Kinetic</code> is set to true the <code>MoveX</code> and <code>MoveY</code> will not apply,
+			plus gravity will not take effect. This would be used mainly for things like "obsticals" like the floor or walls.</p>
+
+			<p>Check out the example file "examples/physics.html" to see how this "level" has been constructed. You may be suprised how easy it is!</p>
+		</div>
+	</body>
+</html>

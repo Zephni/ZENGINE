@@ -35,20 +35,36 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			else ZEngine.Canvas = document.querySelector(ZEngine.Config.Canvas);
 			
 			ZEngine.Canvas2D = ZEngine.Canvas.getContext("2d");
+			ZEngine.Canvas.tabIndex = 1;
 			ZEngine.Canvas.width = ZEngine.Config.Width;
 			ZEngine.Canvas.height = ZEngine.Config.Height;
 			ZEngine.Canvas.style["border"] = "1px solid #AAAAAA";
 
-			if(ZEngine.Config.Parent != null)
-				document.querySelector(ZEngine.Config.Parent).appendChild(ZEngine.Canvas);
+			if(ZEngine.Config.Parent != null) document.querySelector(ZEngine.Config.Parent).appendChild(ZEngine.Canvas);
+
+			ZEngine.Canvas.focus();
 
 			// Global vars
 			ZEngine.Ready = false;
 			ZEngine.Paused = false;
 
+			// Listeners
+			document.addEventListener("keydown", function(e){
+				ZEngine.Input.LastKeyDown = e.keyCode;
+				if(ZEngine.Input.KeysDown !== undefined && ZEngine.Input.KeysDown != false)
+					ZEngine.Input.KeysDown[e.keyCode] = true;
+			}, false);
+
+			document.addEventListener("keyup", function(e){
+				delete ZEngine.Input.KeysDown[e.keyCode];
+			}, false);
+
 			// Run
 			setInterval(function(){
 				if(ZEngine.Ready && !ZEngine.Paused){
+					// Input
+
+					// Graphical
 					ZEngine.Canvas2D.fillStyle = "#EEEEEE";
 					ZEngine.Canvas2D.fillRect(0, 0, ZEngine.Canvas.offsetWidth, ZEngine.Canvas.offsetHeight);
 
@@ -61,6 +77,9 @@ ZEngine.Initialise = function(Config = null, Init = null)
 						if(ZEngine.Objects[I].Update != null)
 							ZEngine.Objects[I].Update();
 					}
+
+					if(ZEngine.Input.LastKeyDown != null)
+						ZEngine.Input.LastKeyDown = null;
 				}
 			}, 1000 / ZEngine.Config.FPS);
 
@@ -112,6 +131,22 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				Init();
 		};
 	}, 0); 
+}
+
+ZEngine.Input = function(){}
+ZEngine.Input.KeysDown = {};
+ZEngine.Input.LastKeyDown = null;
+ZEngine.Input.KeyDown = function(code){
+	return (ZEngine.Input.KeysDown[code] !== undefined);
+}
+
+ZEngine.ObjectsWithComponent = function(Str, IgnoreObject){
+	ObjList = [];
+	for(var I in ZEngine.Objects)
+		if(ZEngine.Objects[I] != IgnoreObject && ZEngine.Objects[I].HasComponent(Str))
+			ObjList.push(ZEngine.Objects[I]);
+
+	return ObjList;
 }
 
 /*
@@ -251,6 +286,7 @@ ZEngineComponents.Sprite = function(Obj, Data){
 	}
 }
 
+// Collider
 ZEngineComponents.Collider = function(Obj, Data){
 	this.Obj = Obj;
 
@@ -258,7 +294,7 @@ ZEngineComponents.Collider = function(Obj, Data){
 		Offset: [0, 0, 0, 0],
 		ShowOutline: false,
 		OutlineColor: "#FF0000"
-	}
+	};
 	for(var I in Data) this.Config[I] = Data[I];
 
 	var Transform = this.Obj.GetComponent("Transform");
@@ -295,3 +331,90 @@ Object.defineProperty(ZEngineComponents.Collider.prototype, "Rect", {
 		];
 	}
 });
+
+// Physics
+ZEngineComponents.Physics = function(Obj, Data){
+	// Setup
+	this.Obj = Obj;
+
+	this.Config = {
+		Kinetic: false,
+		Gravity: 0.3,
+		MaxX: 3,
+		MaxY: 7
+	};
+	for(var I in Data) this.Config[I] = Data[I];
+
+	var Transform = this.Obj.GetComponent("Transform");
+	var Collider = this.Obj.AddComponent("Collider", {ShowOutline: true});
+
+	// Properties
+	this.MoveX = 0;
+	this.MoveY = 0;
+	this.IsGrounded = false;
+
+	// Update
+	this.Update = () => {
+		if(!this.Config.Kinetic){
+			this.MoveY += this.Config.Gravity;
+			if(this.MoveX < -this.Config.MaxX) this.MoveX = -this.Config.MaxX;
+			if(this.MoveX > this.Config.MaxX) this.MoveX = this.Config.MaxX;
+			if(this.MoveY < -this.Config.MaxY) this.MoveY = -this.Config.MaxY;
+			if(this.MoveY > this.Config.MaxY) this.MoveY = this.Config.MaxY;
+
+			var ColliderObjects = ZEngine.ObjectsWithComponent("Collider", this.Obj);
+			for(var I in ColliderObjects){
+				if(this.MoveY > 0)
+				{
+					if(Collider.CollidingWith(ColliderObjects[I], [0, 1])){
+						this.IsGrounded = true;
+						this.MoveY = 0;
+					}else if(Collider.CollidingWith(ColliderObjects[I], [0, this.MoveY])) this.MoveY = 1;
+				}
+				if(this.MoveY < 0){
+					if(!Collider.CollidingWith(ColliderObjects[I], [0, 1])) this.IsGrounded = false;
+					if(Collider.CollidingWith(ColliderObjects[I], [0, -1])) this.MoveY = 0; else if(Collider.CollidingWith(ColliderObjects[I], [0, this.MoveY])) this.MoveY = -1;
+				}
+				if(this.MoveX > 0) if(Collider.CollidingWith(ColliderObjects[I], [1, 0])) this.MoveX = 0; else if(Collider.CollidingWith(ColliderObjects[I], [this.MoveX, 0])) this.MoveX = 1;
+				if(this.MoveX < 0) if(Collider.CollidingWith(ColliderObjects[I], [-1, 0])) this.MoveX = 0; else if(Collider.CollidingWith(ColliderObjects[I], [this.MoveX, 0])) this.MoveX = -1;
+			}
+
+			if(this.MoveX != 0) Transform.Position[0] += this.MoveX;
+			if(this.MoveY != 0) Transform.Position[1] += this.MoveY;
+		}
+	}
+}
+
+// Physics
+ZEngineComponents.CharacterController = function(Obj, Data){
+	// Setup
+	this.Obj = Obj;
+
+	this.Config = {
+		Acceleration: 0.2,
+		Deceleration: 0.2,
+		JumpStrength: 50
+	};
+	for(var I in Data) this.Config[I] = Data[I];
+
+	var Physics = this.Obj.AddComponent("Physics");
+
+	// Update
+	this.Update = () => {
+		//console.log(Physics.IsGrounded);
+		if(ZEngine.Input.LastKeyDown == 90 && Physics.IsGrounded)
+			Physics.MoveY = -this.Config.JumpStrength;
+
+		if(ZEngine.Input.KeyDown(37)) Physics.MoveX -= this.Config.Acceleration;
+		else if(Physics.MoveX < 0){
+			Physics.MoveX += this.Config.Deceleration;
+			if(Physics.MoveX >= -this.Config.Deceleration) Physics.MoveX = 0;
+		}
+
+		if(ZEngine.Input.KeyDown(39)) Physics.MoveX += this.Config.Acceleration;
+		else if(Physics.MoveX > 0){
+			Physics.MoveX -= this.Config.Deceleration;
+			if(Physics.MoveX <= this.Config.Deceleration) Physics.MoveX = 0;
+		}
+	}
+}

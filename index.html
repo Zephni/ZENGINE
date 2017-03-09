@@ -2,6 +2,13 @@
 	<head>
 		<title>ZEngine</title>
 		<link rel="stylesheet" type="text/css" href="style.css">
+
+		<script type="text/javascript">
+			function resizeIframe(obj) {
+				obj.style.height = 0;
+				obj.style.height = (obj.contentWindow.document.body.scrollHeight + 20) + 'px';
+			}
+		</script>
 	</head>
 	<body>
 
@@ -24,8 +31,9 @@
 				<ol>
 					<li><a href="?examples/components">Components</a></li>
 					<li><a href="?examples/prefabs">Prefabs</a></li>
-					<li><a href="?examples/movement">Positioning/Movement</a></li>
+					<li><a href="?examples/movement">Positioning / Movement</a></li>
 					<li><a href="?examples/collision">Collision</a></li>
+					<li><a href="?examples/physics">Character Controller</a></li>
 				</ol>
 			</div>
 			
@@ -35,11 +43,6 @@
 		</div>
 
 		<script type="text/javascript">
-			function resizeIframe(obj) {
-				obj.style.height = 0;
-				obj.style.height = (obj.contentWindow.document.body.scrollHeight + 20) + 'px';
-			}
-
 			var path = window.location.href.split("?")[1];
 			if(path === undefined || path == "") path = "examples/sprite";
 			document.querySelector("iframe").src = path+".html";
