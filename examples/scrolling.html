@@ -1,0 +1,68 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Canvas: "#ZEngineCanvas"}, () => {
+				// Prefabs
+				var Obstical = new ZEngineObject(function(){
+					this.Prefab = true;
+					this.Transform.Size = [32, 32];
+					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "green"});
+				});
+
+				// PObject
+				var PObject = new ZEngineObject(function(){
+					this.Transform.Size = [32, 32];
+					this.Transform.Position = [380, 237];
+					this.CharacterController = this.AddComponent("CharacterController", {});
+
+					this.Update = function(){
+						ZEngine.Scroll = this.Transform.Position;
+					}
+				});
+
+				// Build
+				var LevelExample = [
+					"1111111111111111111111111",
+					"1000000000000000000000001",
+					"1000000000000000000000001",
+					"1000000000000000000000001",
+					"1000000000000000000000001",
+					"1110000000000000000000001",
+					"1100000000000011000000001",
+					"1100100000000000000000001",
+					"1100000000111000000000001",
+					"1111111111111111111111111",
+				];
+
+				for(var Y in LevelExample){{
+					for(var X = 0, len = LevelExample[Y].length; X < len; X++)
+						if(LevelExample[Y][X] == "1"){
+							Obstical.Create(function(){
+								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
+							});
+						}
+					}
+				}
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>Scrolling / Level example</h2>
+
+			<p>First off, scrolling is as simple as setting the <code>ZEngine.Scroll</code> point value to where you wish the "center" of the screen to. In this example the players update function is forcing the scroll location to itself like below:</p>
+
+			<codeblock>ZEngine.Scroll = this.Transform.Position;</codeblock>
+
+			<p>Easy huh!</p>
+
+			<p>As for levels... this is really up to you. In the above example the level is an array of values using 0's and 1's to represent level data, then that data is "looped" through and "Obstical" prefabs are being created in the correct locations.</p>
+		</div>
+	</body>
+</html>

@@ -42,11 +42,11 @@ ZEngine.Initialise = function(Config = null, Init = null)
 
 			if(ZEngine.Config.Parent != null) document.querySelector(ZEngine.Config.Parent).appendChild(ZEngine.Canvas);
 
-			ZEngine.Canvas.focus();
-
 			// Global vars
 			ZEngine.Ready = false;
 			ZEngine.Paused = false;
+			ZEngine.Scroll = [ZEngine.Canvas.width/2, ZEngine.Canvas.height/2];
+			ZEngine.ScrollBuffer = [-1, -1];
 
 			// Listeners
 			document.addEventListener("keydown", function(e){
@@ -56,18 +56,22 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			}, false);
 
 			document.addEventListener("keyup", function(e){
-				delete ZEngine.Input.KeysDown[e.keyCode];
+				ZEngine.Input.KeysDown[e.keyCode] = false;
 			}, false);
 
 			// Run
 			setInterval(function(){
+				ZEngine.Canvas.focus();
+
 				if(ZEngine.Ready && !ZEngine.Paused){
-					// Input
-
-					// Graphical
+					// Clearing and Rendering translated canvas
 					ZEngine.Canvas2D.fillStyle = "#EEEEEE";
-					ZEngine.Canvas2D.fillRect(0, 0, ZEngine.Canvas.offsetWidth, ZEngine.Canvas.offsetHeight);
+					ZEngine.Canvas2D.fillRect((ZEngine.Scroll[0] - ZEngine.Canvas.width/2), (ZEngine.Scroll[1] - ZEngine.Canvas.height/2), ZEngine.Canvas.offsetWidth, ZEngine.Canvas.offsetHeight);
+					if(ZEngine.Scroll[0] - ZEngine.Canvas.width/2 != ZEngine.ScrollBuffer[0]) ZEngine.Canvas2D.translate(ZEngine.ScrollBuffer[0] - ZEngine.Scroll[0] + ZEngine.Canvas.width/2, 0);
+					if(ZEngine.Scroll[1] - ZEngine.Canvas.height/2 != ZEngine.ScrollBuffer[1]) ZEngine.Canvas2D.translate(0, ZEngine.ScrollBuffer[1] - ZEngine.Scroll[1] + ZEngine.Canvas.height/2);
+					ZEngine.ScrollBuffer = [ZEngine.Scroll[0] - ZEngine.Canvas.width/2, ZEngine.Scroll[1] - ZEngine.Canvas.height/2];
 
+					// Objects
 					for(var I in ZEngine.Objects)
 					{
 						for(var C in ZEngine.Objects[I].components)
@@ -112,8 +116,6 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					clearInterval(LoadingInterval);
 				}
 
-				//console.log(NumReady + "/" + CheckObjects.length);
-
 				// Loading update
 				ZEngine.Canvas2D.fillStyle = "#FFFFFF";
 				ZEngine.Canvas2D.fillRect(0, 0, ZEngine.Canvas.offsetWidth, ZEngine.Canvas.offsetHeight);
@@ -137,7 +139,7 @@ ZEngine.Input = function(){}
 ZEngine.Input.KeysDown = {};
 ZEngine.Input.LastKeyDown = null;
 ZEngine.Input.KeyDown = function(code){
-	return (ZEngine.Input.KeysDown[code] !== undefined);
+	return (ZEngine.Input.KeysDown[code] !== undefined && ZEngine.Input.KeysDown[code] !== false);
 }
 
 ZEngine.ObjectsWithComponent = function(Str, IgnoreObject){
@@ -370,7 +372,7 @@ ZEngineComponents.Physics = function(Obj, Data){
 				for(var I in ColliderObjects) if(Collider.CollidingWith(ColliderObjects[I], [(this.MoveX > 0) ? 1 : -1, 0])) this.MoveX = 0;
 				if(this.MoveX != 0) Transform.Position[0] += (this.MoveX > 0) ? 1 : -1;
 			}
-			
+
 			// Y move
 			for(var Y = 0; Y < Math.abs(this.MoveY); Y++){ 
 				for(var I in ColliderObjects) if(Collider.CollidingWith(ColliderObjects[I], [0, (this.MoveY > 0) ? 1 : -1])) this.MoveY = 0;
