@@ -15,29 +15,43 @@
 					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "green"});
 				});
 
-				// PObject
+				var Pickup = new ZEngineObject(function(){
+					this.Prefab = true;
+					this.Types = ["Pickup"];
+					this.Transform.Size = [16, 16];
+					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "blue"});
+				});
+
 				var PObject = new ZEngineObject(function(){
 					this.Prefab = true;
 					this.Transform.Size = [32, 32];
 					this.Transform.Position = [380, 237];
-					this.TiledRPGController = this.AddComponent("TiledRPGController", {});
+					var TiledRPGController = this.AddComponent("TiledRPGController", {Speed: 2});
+					var Collider = this.GetComponent("Collider");
 					this.Update = function(){
 						ZEngine.Scroll = this.Transform.Position;
+
+						if(TiledRPGController.StepComplete){
+							Collider.ObjectsColliding(ZEngine.ObjectsOfType("Pickup"), function(Obj){
+								Obj.Destroy();
+							});
+						}
 					}
 				});
 
 				// Build
 				var LevelExample = [
-					"1111111111111111111111111",
-					"1                       1",
-					"1                       1",
-					"1    11111111111111111  1",
-					"1                       1",
-					"111        P            1",
-					"11            11       11",
-					"11  1                 111",
-					"11        111        1111",
-					"1111111111111111111111111",
+					"111111111111111111111111111",
+					"1        1                1",
+					"1        1                1",
+					"1      O 111   111        1",
+					"1        1       1      O 1",
+					"1111  1111   P   1111  1111",
+					"1        1       1        1",
+					"1            O            1",
+					"1                         1",
+					"1        1       1        1",
+					"111111111111111111111111111",
 				];
 
 				for(var Y in LevelExample){{
@@ -48,6 +62,11 @@
 							});
 						}else if(LevelExample[Y][X] == "P"){
 							PObject.Create(function(){
+								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
+							});
+						}
+						else if(LevelExample[Y][X] == "O"){
+							Pickup.Create(function(){
 								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
 							});
 						}

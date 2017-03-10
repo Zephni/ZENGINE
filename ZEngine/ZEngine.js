@@ -54,7 +54,9 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				if(ZEngine.Input.KeysDown !== undefined && ZEngine.Input.KeysDown != false)
 					ZEngine.Input.KeysDown[e.keyCode] = true;
 
-				e.preventDefault()
+				if(e.keyCode < 112 && e.keyCode > 123) // If not F key, prevent default
+					e.preventDefault()
+				
 				return false;
 			}, false);
 
@@ -350,6 +352,26 @@ ZEngineComponents.Collider = function(Obj, Data){
 			return true;
 	}
 
+	this.ObjectColliding = function(Other, Rect = null){
+		if(Rect == null) Rect = this.Rect;
+		if(this.AreaCollidingWith(Rect[0], Rect[1], Rect[2], Rect[3], Other)) return Other;
+		else return false;
+	}
+
+	this.ObjectsColliding = function(Others, Callback = null, Rect = null){
+		if(Rect == null) Rect = this.Rect;
+
+		var ObjectsArr = [];
+		for(var I in Others){
+			if(this.ObjectColliding(Others[I])){
+				ObjectsArr.push(Others[I]);
+				if(Callback != null) Callback(Others[I]);
+			}
+		}
+
+		return ObjectsArr;
+	}
+
 	this.DrawRect = function(Rect, Color){
 		ZEngine.Canvas2D.beginPath();
 		ZEngine.Canvas2D.rect(Rect[0], Rect[1], Rect[2] - Rect[0], Rect[3] - Rect[1]);
@@ -476,10 +498,17 @@ ZEngineComponents.TiledRPGController = function(Obj, Data){
 	this.OrigY = 0;
 	this.MoveX = 0;
 	this.MoveY = 0;
+	this.StepComplete = false;
+	this.Moving = false;
 
 	// Update
 	this.Update = () => {
+		this.StepComplete = false;
 		if(this.MoveX == 0 && this.MoveY == 0){
+			if(this.OrigX != Transform.Position[0] || this.OrigY != Transform.Position[1]){
+				this.StepComplete = true;
+				this.Moving = false;
+			}
 			this.OrigX = Transform.Position[0];
 			this.OrigY = Transform.Position[1];
 		}
@@ -489,12 +518,14 @@ ZEngineComponents.TiledRPGController = function(Obj, Data){
 		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(40) && !Collider.CollidingWith(ZEngine.ObjectsOfType("Obstical", this.Obj), [0, Transform.Size[1]])) this.MoveY = Transform.Size[1];
 		
 
-		if(Transform.Position[0] < this.OrigX + this.MoveX) Transform.Position[0] += this.Config.Speed;
-		if(Transform.Position[0] > this.OrigX + this.MoveX) Transform.Position[0] -= this.Config.Speed;
-		if(Transform.Position[1] < this.OrigY + this.MoveY) Transform.Position[1] += this.Config.Speed;
-		if(Transform.Position[1] > this.OrigY + this.MoveY) Transform.Position[1] -= this.Config.Speed;
+		if(Transform.Position[0] < this.OrigX + this.MoveX){this.Moving = true; Transform.Position[0] += this.Config.Speed;}
+		if(Transform.Position[0] > this.OrigX + this.MoveX){this.Moving = true; Transform.Position[0] -= this.Config.Speed;}
+		if(Transform.Position[1] < this.OrigY + this.MoveY){this.Moving = true; Transform.Position[1] += this.Config.Speed;}
+		if(Transform.Position[1] > this.OrigY + this.MoveY){this.Moving = true; Transform.Position[1] -= this.Config.Speed;}
 
 		if(Transform.Position[0] == this.OrigX + this.MoveX) this.MoveX = 0;
 		if(Transform.Position[1] == this.OrigY + this.MoveY) this.MoveY = 0;
+
+
 	}
 }

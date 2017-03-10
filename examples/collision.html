@@ -46,8 +46,8 @@
 				OutlineColor: "#FF0000"
 			</codeblock>
 
-			<p>The <code>Offset</code> option will move the collider rectangle around the origional bounding box of the object. By default (<code>[0, 0, 0, 0]</code>) will set the collider to the full
-				size of the object. The four array values will push "inwards" towards the object, in other words positive values will make the collider smaller, and negative values will
+			<p>The <code>Offset</code> option will alter the position/size of the collider rectangle based on the bounding box of the object. By default (<code>[0, 0, 0, 0]</code>) will set the collider to the full
+				size. The four array values will push "inwards" towards the object, in other words positive values will make the collider smaller, and negative values will
 				extend it. Note that <code>Offset</code> values represent the scale of an object, so "0.5" would push a corner of the rectangle to the center on that axis.</p>
 
 			<p>When <code>ShowOutline</code> is set to true an outline will be shown where the collider will take effect.</p>
@@ -66,13 +66,21 @@
 			<p>If you wish to check against the collision box and offset it for that frame (this may be handy if you want to check a collision before the main collider collides):</p>
 
 			<codeblock>
-				if(this.GetComponent("Collider").CollidingWith(AnotherObject, [10, 0]))<br />
+				if(!this.GetComponent("Collider").CollidingWith(AnotherObject, [10, 0]))<br />
 				{<br />
-					&nbsp;&nbsp;&nbsp;&nbsp;this.Transform.Position[0] += 1;<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;this.Transform.Position[0] += 10;<br />
 				}
 			</codeblock>
 
 			<p>This would move an object along until it was within "10" pixels on the X axis.</p>
+
+			<codeblock>
+				Collider.ObjectsColliding(ZEngine.ObjectsOfType("Pickup"), function(Obj){<br />
+					Obj.Destroy();<br />
+				});
+			</codeblock>
+
+			<p>The above takes an array of objects, and runs a callback function on each one so you can do things with it.</p>
 		</div>
 	</body>
 </html>
