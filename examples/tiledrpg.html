@@ -53,21 +53,14 @@
 					"111111111111111111111111111",
 				];
 
-				for(var Y in LevelExample){{
-					for(var X = 0, len = LevelExample[Y].length; X < len; X++)
-						if(LevelExample[Y][X] == "1"){
-							Obstical.Create(function(){
-								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
-							});
-						}else if(LevelExample[Y][X] == "P"){
-							PObject.Create(function(){
-								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
-							});
-						}else if(LevelExample[Y][X] == "O"){
-							Pickup.Create(function(){
-								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
-							});
-						}
+				for(var Y in LevelExample){
+					for(var X = 0, len = LevelExample[Y].length; X < len; X++){
+						if(LevelExample[Y][X] == "1")
+							Obstical.Create(function(){this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];});
+						else if(LevelExample[Y][X] == "P")
+							PObject.Create(function(){this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];});
+						else if(LevelExample[Y][X] == "O")
+							Pickup.Create(function(){this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];});
 					}
 				}
 			});

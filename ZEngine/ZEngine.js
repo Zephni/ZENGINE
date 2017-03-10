@@ -84,14 +84,15 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					ZEngine.ScrollBuffer = [ZEngine.Scroll[0] - ZEngine.Canvas.width/2, ZEngine.Scroll[1] - ZEngine.Canvas.height/2];
 
 					// Objects
-					for(var I in ZEngine.Objects)
+					var LayeredObjects = ZEngine.OrderByLayer(ZEngine.Objects);
+					for(var I in LayeredObjects)
 					{
-						for(var C in ZEngine.Objects[I].components)
-							if(ZEngine.Objects[I].components[C].Update !== undefined)
-								ZEngine.Objects[I].components[C].Update();
+						for(var C in LayeredObjects[I].components)
+							if(LayeredObjects[I].components[C].Update !== undefined)
+								LayeredObjects[I].components[C].Update();
 
-						if(ZEngine.Objects[I].Update != null)
-							ZEngine.Objects[I].Update();
+						if(LayeredObjects[I].Update != null)
+							LayeredObjects[I].Update();
 					}
 
 					if(ZEngine.Input.LastKeyDown != null)
@@ -116,16 +117,12 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				var CheckObjects = [].concat(ZEngine.Objects, ZEngine.Prefabs);
 
 				for(var I in CheckObjects){
-					if(!CheckObjects[I].HasComponent("Sprite"))
-						NumReady++;
-					else if(CheckObjects[I].HasComponent("Sprite") && CheckObjects[I].GetComponent("Sprite").Ready)
-						NumReady++;
+					if(!CheckObjects[I].HasComponent("Sprite")) NumReady++;
+					else if(CheckObjects[I].HasComponent("Sprite") && CheckObjects[I].GetComponent("Sprite").Ready) NumReady++;
 				}
 
 				if(NumReady >= CheckObjects.length)
-				{
 					ZEngine.Ready = true;
-				}
 
 				// Loading update
 				ZEngine.Canvas2D.fillStyle = "#FFFFFF";
@@ -169,6 +166,12 @@ ZEngine.ObjectsOfType = function(Str, IgnoreObject){
 			ObjList.push(ZEngine.Objects[I]);
 
 	return ObjList;
+}
+
+ZEngine.OrderByLayer = function(Objects){
+	var SortedObjects = Objects;
+	SortedObjects.sort(function(a,b) {return (a.Transform.Layer > b.Transform.Layer) ? 1 : ((b.Transform.Layer > a.Transform.Layer) ? -1 : 0);});
+	return SortedObjects;
 }
 
 /*
@@ -253,6 +256,7 @@ ZEngineComponents = function(){}
 // Transform
 ZEngineComponents.Transform = function Transform(Obj){
 	this.Position = [ZEngine.Canvas.width/2, ZEngine.Canvas.height/2];
+	this.Layer = 0;
 	this.Offset = [0.5, 0.5];
 	this.Size = [0, 0];
 }
@@ -545,7 +549,6 @@ ZEngineComponents.TiledRPGController = function(Obj, Data){
 		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(38) && !Collider.CollidingWith(ZEngine.ObjectsOfType(this.Config.ObsticalType, this.Obj), [0, -Transform.Size[1]])) this.MoveY = -Transform.Size[1];
 		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(40) && !Collider.CollidingWith(ZEngine.ObjectsOfType(this.Config.ObsticalType, this.Obj), [0, Transform.Size[1]])) this.MoveY = Transform.Size[1];
 		
-
 		if(Transform.Position[0] < this.OrigX + this.MoveX){this.Moving = true; Transform.Position[0] += this.Config.Speed;}
 		if(Transform.Position[0] > this.OrigX + this.MoveX){this.Moving = true; Transform.Position[0] -= this.Config.Speed;}
 		if(Transform.Position[1] < this.OrigY + this.MoveY){this.Moving = true; Transform.Position[1] += this.Config.Speed;}
