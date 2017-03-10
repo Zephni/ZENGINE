@@ -54,7 +54,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				if(ZEngine.Input.KeysDown !== undefined && ZEngine.Input.KeysDown != false)
 					ZEngine.Input.KeysDown[e.keyCode] = true;
 
-				if(e.keyCode < 112 && e.keyCode > 123) // If not F key, prevent default
+				if(e.keyCode < 112 || e.keyCode > 123) // If not F key, prevent default
 					e.preventDefault()
 				
 				return false;

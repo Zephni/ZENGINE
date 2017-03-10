@@ -74,9 +74,11 @@
 
 			<p>This would move an object along until it was within "10" pixels on the X axis.</p>
 
+			<p>Note not all of the collider properties/methods are mentioned here, you can check them out in the source code if you wish. This method below is very handy for checking collisions with multiple objects: </p>
+
 			<codeblock>
 				Collider.ObjectsColliding(ZEngine.ObjectsOfType("Pickup"), function(Obj){<br />
-					Obj.Destroy();<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;Obj.Destroy();<br />
 				});
 			</codeblock>
 
