@@ -14,26 +14,39 @@
 					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "green"});
 				});
 
+				var Pickup = new ZEngineObject(function(){
+					this.Prefab = true;
+					this.Types = ["Pickup"];
+					this.Transform.Size = [16, 16];
+					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "blue"});
+				});
+
 				// PObject
 				var PObject = new ZEngineObject(function(){
 					this.Prefab = true;
 					this.Transform.Size = [32, 32];
 					this.Transform.Position = [380, 237];
 					this.PlatformerController = this.AddComponent("PlatformerController", {});
-					this.Update = function(){ZEngine.Scroll = this.Transform.Position;}
+					this.Update = function(){
+						ZEngine.Scroll = this.Transform.Position;
+
+						this.GetComponent("Collider").ObjectsColliding(ZEngine.ObjectsOfType("Pickup"), function(Obj){
+							Obj.Destroy();
+						});
+					}
 				});
 
 				// Build
 				var LevelExample = [
 					"1111111111111111111111111",
 					"1                       1",
-					"1                       1",
+					"1              O O O    1",
 					"1    11111111111111111  1",
-					"1                       1",
-					"111                     1",
+					"1O                      1",
+					"111           O         1",
 					"11            11       11",
 					"11  1      P          111",
-					"11        111        1111",
+					"11        111     O   1111",
 					"1111111111111111111111111",
 				];
 
@@ -47,6 +60,10 @@
 							PObject.Create(function(){
 								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
 							});
+						}else if(LevelExample[Y][X] == "O"){
+							Pickup.Create(function(){
+								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
+							});
 						}
 					}
 				}
@@ -56,15 +73,44 @@
 		<canvas id="ZEngineCanvas"></canvas>
 
 		<div id="info">
-			<h2>Scrolling / Level example</h2>
+			<h2>PlatformerController / Physics</h2>
 
-			<p>First off, scrolling is as simple as setting the <code>ZEngine.Scroll</code> point value to where you wish the "center" of the screen to. In this example the players update function is forcing the scroll location to itself like below:</p>
+			<p>Try using your arrow keys and the "Z" key to move about the box above and collect the blue pickups.</p>
 
-			<codeblock>ZEngine.Scroll = this.Transform.Position;</codeblock>
+			<p>The <code>PlatformerController</code> component uses the <code>Physics</code> component and makes a controllable character with keyboard input.</p>
 
-			<p>Easy huh!</p>
+			<p>When <code>Physics</code> is added to an object it will naturally provide gravity and collision detection very easily with any other collider object. Note that when dealing with
+				an object that has <code>Physics</code>, incremental movements should be implemented with the <code>MoveX</code> and <code>MoveY</code> properties. These will move the object in
+				the specified direction and check collisions properly, in other words a object will not "clip" through other colliders when moving along.</p>
 
-			<p>As for levels... this is really up to you. In the above example the level is an array of values using 0's and 1's to represent level data, then that data is "looped" through and "Obstical" prefabs are being created in the correct locations.</p>
+			<p>The <code>PlatformerController</code> supports the following options when initiating:</p>
+
+			<codeblock>
+				Acceleration: 0.2,<br />
+				Deceleration: 0.2,<br />
+				JumpStrength: 50
+			</codeblock>
+
+			<p>And you can access further related properties within the <code>Physics</code> component:</p>
+
+			<codeblock>
+				Kinetic: false,<br />
+				Gravity: 0.3,<br />
+				MaxX: 3,<br />
+				MaxY: 7,
+				ObsticalType: "Obstical"
+			</codeblock>
+
+			<p>Other than <code>Kinetic</code> the above properties should be fairly self explanatory. If <code>Kinetic</code> is set to true the <code>MoveX</code> and <code>MoveY</code> will not apply,
+			plus gravity will not take effect. This would be used mainly for things like "obsticals" like the floor or walls.</p>
+
+			<p><code>ObsticalType</code> is used to distinguish which type of objects should be "solid" to collide with. By default, if the object's <code>Types</code> value is not set when adding a collider component ZEngine will automatically set the type to "Obstical", if you wish to change this you can do so when instanciating an object:</p>
+
+			<codeblock>
+				this.Types = ["SomeType"];
+			</codeblock>
+
+			<p>Check out the example file "examples/physics.html" to see how this "level" has been constructed. You may be suprised how easy it is!</p>
 		</div>
 	</body>
 </html>

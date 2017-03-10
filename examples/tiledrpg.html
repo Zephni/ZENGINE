@@ -10,7 +10,6 @@
 				// Prefabs
 				var Obstical = new ZEngineObject(function(){
 					this.Prefab = true;
-					this.Types = ["Obstical"];
 					this.Transform.Size = [32, 32];
 					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "green"});
 				});
@@ -64,8 +63,7 @@
 							PObject.Create(function(){
 								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
 							});
-						}
-						else if(LevelExample[Y][X] == "O"){
+						}else if(LevelExample[Y][X] == "O"){
 							Pickup.Create(function(){
 								this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];
 							});
@@ -79,15 +77,23 @@
 
 		<div id="info">
 			<h2>TiledRPGController</h2>
-			
-			<p style="color: red;">Note this is in early development.</p>
 
-			<p>Try using your arrow keys to move around.</p>
+			<p>Try using your arrow keys to move around and collect the blue pickups.</p>
 
 			<p>The <code>TiledRPGController</code> will allow your player to only move in blocks based on it's size, like a classic RPG. It supports the following options when initiating:</p>
 
 			<codeblock>
-				Speed: 1
+				Speed: 1,
+				ObsticalType: "Obstical"
+			</codeblock>
+
+			<p><code>Speed</code> is how many pixels per frame the object moves between full "steps". Note at the moment this will have to be a number divisible by the amount of pixels in a whole step, in other words if your
+				object is 32 pixels in width/height: 1, 2 or 4 would be viable options.</p>
+
+			<p><code>ObsticalType</code> is used to distinguish which type of objects should be "solid" to collide with. By default, if the object's <code>Types</code> value is not set when adding a collider component ZEngine will automatically set the type to "Obstical", if you wish to change this you can do so when instanciating an object:</p>
+
+			<codeblock>
+				this.Types = ["SomeType"];
 			</codeblock>
 		</div>
 	</body>

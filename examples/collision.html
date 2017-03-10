@@ -7,7 +7,7 @@
 	<body>
 		<script type="text/javascript">
 			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
-				Floor =new ZEngineObject(function(){
+				Floor = new ZEngineObject(function(){
 					this.Transform.Size = [600, 50];
 					this.Transform.Position = [ZEngine.Canvas.width/2, 250];
 					this.AddComponent("Collider", {ShowOutline: true});
