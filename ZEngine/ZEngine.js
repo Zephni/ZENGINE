@@ -53,10 +53,15 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				ZEngine.Input.LastKeyDown = e.keyCode;
 				if(ZEngine.Input.KeysDown !== undefined && ZEngine.Input.KeysDown != false)
 					ZEngine.Input.KeysDown[e.keyCode] = true;
+
+				e.preventDefault()
+				return false;
 			}, false);
 
 			document.addEventListener("keyup", function(e){
 				ZEngine.Input.KeysDown[e.keyCode] = false;
+				e.preventDefault()
+				return false;
 			}, false);
 
 			// Run
@@ -151,6 +156,15 @@ ZEngine.ObjectsWithComponent = function(Str, IgnoreObject){
 	return ObjList;
 }
 
+ZEngine.ObjectsOfType = function(Str, IgnoreObject){
+	ObjList = [];
+	for(var I in ZEngine.Objects)
+		if(ZEngine.Objects[I] != IgnoreObject && ZEngine.Objects[I].Types.indexOf(Str) > -1)
+			ObjList.push(ZEngine.Objects[I]);
+
+	return ObjList;
+}
+
 /*
 	ZEngineObject
 */
@@ -161,6 +175,7 @@ ZEngineObject = function(Init = null)
 
 	// User properties
 	this.Prefab = false;
+	this.Types = [];
 	this.Data = {};
 
 	// Standard components
@@ -198,6 +213,10 @@ ZEngineObject.prototype.GetComponent = function(Alias)
 	return this.components[Alias];
 }
 
+ZEngineObject.prototype.HasType = function(Str){
+	return (this.Types.indexOf(Str) > -1);
+}
+
 ZEngineObject.prototype.Create = function(Init = null)
 {
 	var NewObject = new ZEngineObject(this.init1);
@@ -214,6 +233,10 @@ ZEngineObject.prototype.Create = function(Init = null)
 
 	ZEngine.Objects.push(NewObject);
 	return NewObject;
+}
+
+ZEngineObject.prototype.Destroy = function(){
+	ZEngine.Objects.splice(ZEngine.Objects.indexOf(this), 1);
 }
 
 /*
@@ -262,7 +285,6 @@ ZEngineComponents.Sprite = function(Obj, Data){
 	
 	// Update
 	this.Update = () => {
-
 		if(this.Animation != null){
 			this.Animation.Iterator++
 			if(this.Animation.Iterator >= ZEngine.Config.FPS / this.Animation.Speed) {this.Animation.CurrentFrame++; this.Animation.Iterator = 0;}
@@ -295,31 +317,49 @@ ZEngineComponents.Collider = function(Obj, Data){
 	this.Config = {
 		Offset: [0, 0, 0, 0],
 		ShowOutline: false,
-		OutlineColor: "#FF0000"
+		OutlineColor: "#FF0000",
+		ShowAreaOutline: false,
+		AreaOutlineColor: "#00FF00"
 	};
 	for(var I in Data) this.Config[I] = Data[I];
 
 	var Transform = this.Obj.GetComponent("Transform");
-	
+
 	this.CollidingWith = function(Other, CheckAhead = [0, 0]){
-		var ThisRect = [
-			this.Rect[0] + 1 + CheckAhead[0],
-			this.Rect[1] + 1 + CheckAhead[1],
-			this.Rect[2] + 1 + CheckAhead[0],
-			this.Rect[3] + 1 + CheckAhead[1]
-		];
+		var Others = [];
+		if(Other.Prefab !== undefined) Others.push(Other);
+		else Others = Other;
+
+		for(var I in Others){
+			if(this.AreaCollidingWith(
+				this.Rect[0] + CheckAhead[0],
+				this.Rect[1] + CheckAhead[1],
+				this.Rect[2] + CheckAhead[0],
+				this.Rect[3] + CheckAhead[1]
+			, Others[I])) return true;
+		}
+
+		return false;
+	}
+
+	this.AreaCollidingWith = function(X, Y, X2, Y2, Other){
+		var Rect = [X, Y, X2, Y2];
 		var OtherRect = Other.GetComponent("Collider").Rect;
-		return ThisRect[0] < OtherRect[2] && ThisRect[2] > OtherRect[0] && ThisRect[1] < OtherRect[3] && ThisRect[3] > OtherRect[1];
+		if(this.Config.ShowAreaOutline) this.DrawRect(Rect, this.Config.AreaOutlineColor);
+		if(Rect[0] < OtherRect[2] && Rect[2] > OtherRect[0] && Rect[1] < OtherRect[3] && Rect[3] > OtherRect[1])
+			return true;
+	}
+
+	this.DrawRect = function(Rect, Color){
+		ZEngine.Canvas2D.beginPath();
+		ZEngine.Canvas2D.rect(Rect[0], Rect[1], Rect[2] - Rect[0], Rect[3] - Rect[1]);
+		ZEngine.Canvas2D.strokeStyle = Color;
+		ZEngine.Canvas2D.lineWidth = 1;
+		ZEngine.Canvas2D.stroke();
 	}
 
 	this.Update = function(){
-		if(this.Config.ShowOutline){
-			ZEngine.Canvas2D.beginPath();
-			ZEngine.Canvas2D.rect(this.Rect[0], this.Rect[1], this.Rect[2] - this.Rect[0], this.Rect[3] - this.Rect[1]);
-			ZEngine.Canvas2D.strokeStyle = this.Config.OutlineColor;
-			ZEngine.Canvas2D.lineWidth = 1;
-			ZEngine.Canvas2D.stroke();
-		}
+		if(this.Config.ShowOutline) this.DrawRect(this.Rect, this.Config.OutlineColor);
 	}
 }
 
@@ -369,13 +409,13 @@ ZEngineComponents.Physics = function(Obj, Data){
 
 			// X move
 			for(var X = 0; X < Math.abs(this.MoveX); X++){
-				for(var I in ColliderObjects) if(Collider.CollidingWith(ColliderObjects[I], [(this.MoveX > 0) ? 1 : -1, 0])) this.MoveX = 0;
+				if(Collider.CollidingWith(ColliderObjects, [(this.MoveX > 0) ? 1 : -1, 0])) this.MoveX = 0;
 				if(this.MoveX != 0) Transform.Position[0] += (this.MoveX > 0) ? 1 : -1;
 			}
 
 			// Y move
 			for(var Y = 0; Y < Math.abs(this.MoveY); Y++){ 
-				for(var I in ColliderObjects) if(Collider.CollidingWith(ColliderObjects[I], [0, (this.MoveY > 0) ? 1 : -1])) this.MoveY = 0;
+				if(Collider.CollidingWith(ColliderObjects, [0, (this.MoveY > 0) ? 1 : -1])) this.MoveY = 0;
 				if(this.MoveY != 0) Transform.Position[1] += (this.MoveY > 0) ? 1 : -1;
 			}
 
@@ -388,8 +428,8 @@ ZEngineComponents.Physics = function(Obj, Data){
 	}
 }
 
-// Physics
-ZEngineComponents.CharacterController = function(Obj, Data){
+// PlatformerController
+ZEngineComponents.PlatformerController = function(Obj, Data){
 	// Setup
 	this.Obj = Obj;
 
@@ -403,7 +443,6 @@ ZEngineComponents.CharacterController = function(Obj, Data){
 
 	// Update
 	this.Update = () => {
-		//console.log(Physics.IsGrounded);
 		if(ZEngine.Input.LastKeyDown == 90 && Physics.IsGrounded)
 			Physics.MoveY = -this.Config.JumpStrength;
 
@@ -418,5 +457,44 @@ ZEngineComponents.CharacterController = function(Obj, Data){
 			Physics.MoveX -= this.Config.Deceleration;
 			if(Physics.MoveX <= this.Config.Deceleration) Physics.MoveX = 0;
 		}
+	}
+}
+
+// TopDownRPGController
+ZEngineComponents.TiledRPGController = function(Obj, Data){
+	// Setup
+	this.Obj = Obj;
+
+	this.Config = {
+		Speed: 1
+	}; for(var I in Data) this.Config[I] = Data[I];
+
+	var Transform = this.Obj.Transform;
+	var Collider = this.Obj.AddComponent("Collider", {ShowOutline: true});
+
+	this.OrigX = 0;
+	this.OrigY = 0;
+	this.MoveX = 0;
+	this.MoveY = 0;
+
+	// Update
+	this.Update = () => {
+		if(this.MoveX == 0 && this.MoveY == 0){
+			this.OrigX = Transform.Position[0];
+			this.OrigY = Transform.Position[1];
+		}
+		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(39) && !Collider.CollidingWith(ZEngine.ObjectsOfType("Obstical", this.Obj), [Transform.Size[0], 0])) this.MoveX = Transform.Size[0];
+		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(37) && !Collider.CollidingWith(ZEngine.ObjectsOfType("Obstical", this.Obj), [-Transform.Size[0], 0])) this.MoveX = -Transform.Size[0];
+		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(38) && !Collider.CollidingWith(ZEngine.ObjectsOfType("Obstical", this.Obj), [0, -Transform.Size[1]])) this.MoveY = -Transform.Size[1];
+		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(40) && !Collider.CollidingWith(ZEngine.ObjectsOfType("Obstical", this.Obj), [0, Transform.Size[1]])) this.MoveY = Transform.Size[1];
+		
+
+		if(Transform.Position[0] < this.OrigX + this.MoveX) Transform.Position[0] += this.Config.Speed;
+		if(Transform.Position[0] > this.OrigX + this.MoveX) Transform.Position[0] -= this.Config.Speed;
+		if(Transform.Position[1] < this.OrigY + this.MoveY) Transform.Position[1] += this.Config.Speed;
+		if(Transform.Position[1] > this.OrigY + this.MoveY) Transform.Position[1] -= this.Config.Speed;
+
+		if(Transform.Position[0] == this.OrigX + this.MoveX) this.MoveX = 0;
+		if(Transform.Position[1] == this.OrigY + this.MoveY) this.MoveY = 0;
 	}
 }

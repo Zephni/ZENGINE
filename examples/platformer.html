@@ -22,7 +22,7 @@
 				PObject = new ZEngineObject(function(){
 					this.Transform.Size = [32, 32];
 					this.Transform.Position[1] = 0;
-					var CharacterController = this.AddComponent("CharacterController", {});			
+					PlatformerController = this.AddComponent("PlatformerController", {});			
 				});
 			});
 		</script>
@@ -30,18 +30,18 @@
 		<canvas id="ZEngineCanvas"></canvas>
 
 		<div id="info">
-			<h2>Character Controller / Physics</h2>
+			<h2>PlatformerController / Physics</h2>
 
 			<p>Try using your arrow keys and the "Z" key to move about the box above.</p>
 
-			<p>The <code>CharacterController</code> component uses the <code>Physics</code> component and makes a controllable character with keyboard input.</p>
+			<p>The <code>PlatformerController</code> component uses the <code>Physics</code> component and makes a controllable character with keyboard input.</p>
 
 			<p>When <code>Physics</code> is added to an object it will naturally provide gravity and collision detection very easily with any other collider object. Note that when dealing with
 				an object that has <code>Physics</code>, incremental movements should be implemented with the <code>MoveX</code> and <code>MoveY</code> properties. These will move the object in
 				the specified direction and check collisions properly, in other words a object will not "clip" through other colliders when moving along.</p>
 
 
-			<p>The <code>CharacterController</code> supports the following options when initiating:</p>
+			<p>The <code>PlatformerController</code> supports the following options when initiating:</p>
 
 			<codeblock>
 				Acceleration: 0.2,<br />

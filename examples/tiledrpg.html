@@ -10,6 +10,7 @@
 				// Prefabs
 				var Obstical = new ZEngineObject(function(){
 					this.Prefab = true;
+					this.Types = ["Obstical"];
 					this.Transform.Size = [32, 32];
 					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "green"});
 				});
@@ -19,8 +20,10 @@
 					this.Prefab = true;
 					this.Transform.Size = [32, 32];
 					this.Transform.Position = [380, 237];
-					this.PlatformerController = this.AddComponent("PlatformerController", {});
-					this.Update = function(){ZEngine.Scroll = this.Transform.Position;}
+					this.TiledRPGController = this.AddComponent("TiledRPGController", {});
+					this.Update = function(){
+						ZEngine.Scroll = this.Transform.Position;
+					}
 				});
 
 				// Build
@@ -30,9 +33,9 @@
 					"1                       1",
 					"1    11111111111111111  1",
 					"1                       1",
-					"111                     1",
+					"111        P            1",
 					"11            11       11",
-					"11  1      P          111",
+					"11  1                 111",
 					"11        111        1111",
 					"1111111111111111111111111",
 				];
@@ -56,15 +59,17 @@
 		<canvas id="ZEngineCanvas"></canvas>
 
 		<div id="info">
-			<h2>Scrolling / Level example</h2>
+			<h2>TiledRPGController</h2>
+			
+			<p style="color: red;">Note this is in early development.</p>
 
-			<p>First off, scrolling is as simple as setting the <code>ZEngine.Scroll</code> point value to where you wish the "center" of the screen to. In this example the players update function is forcing the scroll location to itself like below:</p>
+			<p>Try using your arrow keys to move around.</p>
 
-			<codeblock>ZEngine.Scroll = this.Transform.Position;</codeblock>
+			<p>The <code>TiledRPGController</code> will allow your player to only move in blocks based on it's size, like a classic RPG. It supports the following options when initiating:</p>
 
-			<p>Easy huh!</p>
-
-			<p>As for levels... this is really up to you. In the above example the level is an array of values using 0's and 1's to represent level data, then that data is "looped" through and "Obstical" prefabs are being created in the correct locations.</p>
+			<codeblock>
+				Speed: 1
+			</codeblock>
 		</div>
 	</body>
 </html>
