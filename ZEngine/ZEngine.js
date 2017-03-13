@@ -18,6 +18,9 @@ ZEngine.Config = {
 ZEngine.Prefabs = [];
 ZEngine.Objects = [];
 
+ZEngine.UpdateLayers = false;
+ZEngine.LayeredObjects = [];
+
 ZEngine.Canvas = null;
 
 // Methods
@@ -84,15 +87,19 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					ZEngine.ScrollBuffer = [ZEngine.Scroll[0] - ZEngine.Canvas.width/2, ZEngine.Scroll[1] - ZEngine.Canvas.height/2];
 
 					// Objects
-					var LayeredObjects = ZEngine.OrderByLayer(ZEngine.Objects);
-					for(var I in LayeredObjects)
+					if(ZEngine.UpdateLayers){
+						ZEngine.LayeredObjects = ZEngine.OrderByLayer(ZEngine.Objects);
+						ZEngine.UpdateLayers = false;
+					}
+					
+					for(var I in ZEngine.LayeredObjects)
 					{
-						for(var C in LayeredObjects[I].components)
-							if(LayeredObjects[I].components[C].Update !== undefined)
-								LayeredObjects[I].components[C].Update();
+						for(var C in ZEngine.LayeredObjects[I].components)
+							if(ZEngine.LayeredObjects[I].components[C].Update !== undefined)
+								ZEngine.LayeredObjects[I].components[C].Update();
 
-						if(LayeredObjects[I].Update != null)
-							LayeredObjects[I].Update();
+						if(ZEngine.LayeredObjects[I].Update != null)
+							ZEngine.LayeredObjects[I].Update();
 					}
 
 					if(ZEngine.Input.LastKeyDown != null)
@@ -291,10 +298,19 @@ ZEngineComponents = function(){}
 // Transform
 ZEngineComponents.Transform = function Transform(Obj){
 	this.Position = [ZEngine.Canvas.width/2, ZEngine.Canvas.height/2];
-	this.Layer = 0;
 	this.Offset = [0.5, 0.5];
 	this.Size = [0, 0];
+	this.layer = 0;
+	this.Layer = 0;
 }
+
+Object.defineProperty(ZEngineComponents.Transform.prototype, "Layer", {
+	get: function(){return this.layer;},
+	set: function(value){
+		this.layer = value;
+		ZEngine.UpdateLayers = true;
+	}
+});
 
 Object.defineProperty(ZEngineComponents.Transform.prototype, "BoundingBox", {
 	get: function(){return [

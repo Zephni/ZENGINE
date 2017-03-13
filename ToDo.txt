@@ -1,5 +1,3 @@
-Layers get/setter and store objects in layer order so doesn't have to sort every frame
 Layer coefficients? Object creation when scrolled/scrolling.. need to check if this works properly
 Add sound, play/pause/volume (will need this.Ready checking on loading)
 Possibly split "Update" methods by adding "Render"/"Draw".
-Stop colliders showing outline by default when added through controllers (make alternative for examples)
