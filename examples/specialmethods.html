@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
+				new ZEngineObject(function(){
+					this.Transform.Position[0] = 0;
+					this.AddComponent("Text", {Content: "0", FontSize: "42px"});
+
+					ZEngine.Every(1000, (I) => {
+						this.GetComponent("Text").Config.Content = I;
+						if(I >= 10) return true;
+					});
+
+					ZEngine.WhileDo(() => {return this.Transform.Position[0] < ZEngine.Canvas.width/2;}, () => {
+						this.Transform.Position[0] +=0.2;
+					});
+				});
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>Special Methods</h2>
+
+			<p>ZEngine has a few special methods which makes some awkward development very easy. Let's look at each one:</p>
+
+			<codeblock>ZEngine.Wait(WaitTime, Callback)</codeblock>
+
+			<p>This will wait for <code>WaitTime</code> milliseconds, and then call the <code>Callback</code> function.</p>
+
+			<codeblock>ZEngine.WaitDo(WaitTime, Do = null, Callback = null)</codeblock>
+
+			<p>This will wait for <code>WaitTime</code> milliseconds, and run <code>Do</code> until it is reached. After this <code>Callback</code> is called.</p>
+
+			<codeblock>ZEngine.Every.(WaitTime, Callback)</codeblock>
+
+			<p>This will call <code>Callback</code> every <code>WaitTime</code> milliseconds. If <code>Callback</code> returns true the interval will be cleared and will not be called again.</p>
+
+			<codeblock>ZEngine.WhileDo(While, Do, Callback = null)</codeblock>
+
+			<p>While <code>While</code> is true, <code>Do</code> will be called. If <code>Callback</code> is not null it will be called once <code>While</code> is false.</p>
+		</div>
+	</body>
+</html>

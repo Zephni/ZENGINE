@@ -174,6 +174,41 @@ ZEngine.OrderByLayer = function(Objects){
 	return SortedObjects;
 }
 
+// Special
+ZEngine.Wait = function(WaitTime, Callback){
+	setTimeout(Callback, WaitTime);
+}
+
+ZEngine.WaitDo = function(WaitTime, Do = null, Callback = null){
+	var T = 0;
+	ZEngine.WhileDo(() => {return T < WaitTime;}, () => {
+		T++;
+		if(Do != null) Do(T);
+	}, () => {
+		if(Callback !== null) Callback();
+	});
+}
+
+ZEngine.Every = function(WaitTime, Callback){
+	var I = 0;
+	var Interval = setInterval(() => {
+		I++;
+		var Clear = Callback(I);
+		if(Clear) clearInterval(Interval);
+	}, WaitTime);
+}
+
+ZEngine.WhileDo = function(While, Do, Callback = null){
+	var Interval = setInterval(function(){
+		if(While()) if(Do != null) Do();
+		else{
+			clearInterval(Interval);
+			if(Callback !== null) Callback();
+		}
+	}, 0);
+}
+// /Special
+
 /*
 	ZEngineObject
 */

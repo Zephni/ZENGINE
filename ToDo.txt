@@ -1,4 +1,3 @@
-Add "RunUntil" and "Every" type methods to global ZEngine object
 Layers get/setter and store objects in layer order so doesn't have to sort every frame
 Layer coefficients? Object creation when scrolled/scrolling.. need to check if this works properly
 Add sound, play/pause/volume (will need this.Ready checking on loading)
