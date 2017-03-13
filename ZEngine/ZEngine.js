@@ -92,18 +92,17 @@ ZEngine.Initialise = function(Config = null, Init = null)
 						ZEngine.UpdateLayers = false;
 					}
 					
-					for(var I in ZEngine.LayeredObjects)
-					{
-						for(var C in ZEngine.LayeredObjects[I].components)
-							if(ZEngine.LayeredObjects[I].components[C].Update !== undefined)
-								ZEngine.LayeredObjects[I].components[C].Update();
+					for(var I in ZEngine.LayeredObjects){
+						for(var C in ZEngine.LayeredObjects[I].components){
+							if(ZEngine.LayeredObjects[I].components[C].Update !== undefined) ZEngine.LayeredObjects[I].components[C].Update();
+							if(ZEngine.LayeredObjects[I].components[C].Draw !== undefined) ZEngine.LayeredObjects[I].components[C].Draw();
+						}
 
-						if(ZEngine.LayeredObjects[I].Update != null)
-							ZEngine.LayeredObjects[I].Update();
+						if(ZEngine.LayeredObjects[I].Update != null) ZEngine.LayeredObjects[I].Update();
+						if(ZEngine.LayeredObjects[I].Draw != null) ZEngine.LayeredObjects[I].Draw();
 					}
 
-					if(ZEngine.Input.LastKeyDown != null)
-						ZEngine.Input.LastKeyDown = null;
+					if(ZEngine.Input.LastKeyDown != null) ZEngine.Input.LastKeyDown = null;
 				}
 			}, 1000 / ZEngine.Config.FPS);
 
@@ -334,7 +333,7 @@ ZEngineComponents.Text = function(Obj, Data){
 
 	var Transform = this.Obj.GetComponent("Transform");
 
-	this.Update = () => {
+	this.Draw = () => {
 		ZEngine.Canvas2D.font = this.Config.FontSize + " " + this.Config.Font;
 		ZEngine.Canvas2D.fillStyle = this.Config.Color;
 		ZEngine.Canvas2D.fillText(this.Config.Content, Transform.Position[0], Transform.Position[1]);
@@ -372,7 +371,9 @@ ZEngineComponents.Sprite = function(Obj, Data){
 			if(this.Animation.CurrentFrame >= this.Animation.Frames.length) {this.Animation.CurrentFrame = 0;}
 			this.Rect = [this.Animation.Frames[this.Animation.CurrentFrame][0] * this.Rect[2], this.Animation.Frames[this.Animation.CurrentFrame][1] * this.Rect[3], this.Rect[2], this.Rect[3]];
 		}
+	}
 
+	this.Draw = () => {
 		var Transform = Obj.GetComponent("Transform");
 		if(this.Ready && Transform != null)
 		{
@@ -461,7 +462,7 @@ ZEngineComponents.Collider = function(Obj, Data){
 		ZEngine.Canvas2D.stroke();
 	}
 
-	this.Update = function(){
+	this.Draw = () => {
 		if(this.Config.ShowOutline) this.DrawRect(this.Rect, this.Config.OutlineColor);
 	}
 }
