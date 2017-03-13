@@ -21,12 +21,6 @@
 					var TiledRPGController = this.AddComponent("TiledRPGController", {Speed: 2, ShowOutline: true});
 					this.Update = function(){
 						ZEngine.Scroll = this.Transform.Position;
-
-						if(TiledRPGController.StepComplete){
-							this.GetComponent("Collider").ObjectsColliding(ZEngine.ObjectsOfType("Pickup"), function(Obj){
-								Obj.Destroy();
-							});
-						}
 					}
 				});
 
@@ -78,6 +72,8 @@
 			<codeblock>
 				this.Types = ["SomeType"];
 			</codeblock>
+
+			<p>With this controller you can call <code>StepComplete</code> that will be called for a single update when an step has finished moving.</p>
 		</div>
 	</body>
 </html>
