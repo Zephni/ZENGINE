@@ -26,7 +26,7 @@
 					this.Prefab = true;
 					this.Transform.Size = [32, 32];
 					this.Transform.Position = [380, 237];
-					this.AddComponent("PlatformerController", {});
+					this.AddComponent("PlatformerController", {ShowOutline: true});
 					this.Update = function(){
 						ZEngine.Scroll = this.Transform.Position;
 

@@ -471,11 +471,12 @@ ZEngineComponents.Physics = function(Obj, Data){
 		Gravity: 0.3,
 		MaxX: 3,
 		MaxY: 7,
-		ObsticalType: "Obstical"
+		ObsticalType: "Obstical",
+		ShowOutline: false
 	}; for(var I in Data) this.Config[I] = Data[I];
 
 	var Transform = this.Obj.GetComponent("Transform");
-	var Collider = this.Obj.AddComponent("Collider", {ShowOutline: true});
+	var Collider = this.Obj.AddComponent("Collider", {ShowOutline: this.Config.ShowOutline});
 
 	// Properties
 	this.MoveX = 0;
@@ -524,10 +525,11 @@ ZEngineComponents.PlatformerController = function(Obj, Data){
 	this.Config = {
 		Acceleration: 0.2,
 		Deceleration: 0.2,
-		JumpStrength: 50
+		JumpStrength: 50,
+		ShowOutline: false
 	}; for(var I in Data) this.Config[I] = Data[I];
 
-	var Physics = this.Obj.AddComponent("Physics");
+	var Physics = this.Obj.AddComponent("Physics", {ShowOutline: this.Config.ShowOutline});
 
 	// Update
 	this.Update = () => {
@@ -555,11 +557,12 @@ ZEngineComponents.TiledRPGController = function(Obj, Data){
 
 	this.Config = {
 		Speed: 1,
-		ObsticalType: "Obstical"
+		ObsticalType: "Obstical",
+		ShowOutline: false
 	}; for(var I in Data) this.Config[I] = Data[I];
 
 	var Transform = this.Obj.Transform;
-	var Collider = this.Obj.AddComponent("Collider", {ShowOutline: true});
+	var Collider = this.Obj.AddComponent("Collider", {ShowOutline: this.Config.ShowOutline});
 
 	this.OrigX = 0;
 	this.OrigY = 0;

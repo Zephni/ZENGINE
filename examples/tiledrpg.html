@@ -25,13 +25,12 @@
 					this.Prefab = true;
 					this.Transform.Size = [32, 32];
 					this.Transform.Position = [380, 237];
-					var TiledRPGController = this.AddComponent("TiledRPGController", {Speed: 2});
-					var Collider = this.GetComponent("Collider");
+					var TiledRPGController = this.AddComponent("TiledRPGController", {Speed: 2, ShowOutline: true});
 					this.Update = function(){
 						ZEngine.Scroll = this.Transform.Position;
 
 						if(TiledRPGController.StepComplete){
-							Collider.ObjectsColliding(ZEngine.ObjectsOfType("Pickup"), function(Obj){
+							this.GetComponent("Collider").ObjectsColliding(ZEngine.ObjectsOfType("Pickup"), function(Obj){
 								Obj.Destroy();
 							});
 						}

@@ -17,7 +17,7 @@
 					this.Transform.Size = [32, 32];
 					this.Transform.Position[1] = 100;
 					this.AddComponent("Sprite", {Src: "assets/Box.png"});
-					var Collider = this.AddComponent("Collider");
+					var Collider = this.AddComponent("Collider", {ShowOutline: true});
 				
 					this.Update = function(){
 						if(!Collider.CollidingWith(Floor, [0, 1]))
