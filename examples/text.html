@@ -10,10 +10,10 @@
 				new ZEngineObject(function(){
 					this.Data = {FinalString: "Hello ZEngine!"}
 					var TextObj = this.AddComponent("Text");
-
+					
 					setInterval(() => {
-						if(TextObj.Config.Content.length < this.Data.FinalString.length)
-							TextObj.Config.Content = this.Data.FinalString.substring(0, TextObj.Config.Content.length+1);
+						if(TextObj.Content.length < this.Data.FinalString.length)
+							TextObj.Content = this.Data.FinalString.substring(0, TextObj.Content.length+1);
 					}, 50);
 				});
 			});
@@ -26,21 +26,15 @@
 
 			<p>Text is a simple as adding a <code>Text</code> component, and setting it's <code>Content</code> string.</p>
 
-			<p>You can do this by passing it when initialising the component, or after:</p>
+			<p>You can do this by modifying the it's property:</p>
 
 			<codeblock>
-				// When initialising<br />
-				this.AddComponent("Text", {Content: "Hello ZEngine!"});<br />
-				<br />
-				// After initialising<br />
-				var TextObj = this.AddComponent("Text");<br />
-				TextObj.Config.Content = "Hello ZEngine!";
+				this.AddComponent("Text").Content = "Hello ZEngine!";<br />
 			</codeblock>
 
 			<p>The <code>Text</code> component takes the following config options:</p>
 
 			<codeblock>
-				Content: "",<br />
 				Font: "sans-serif",<br />
 				Color: "#111111",<br />
 				FontSize: "18px"

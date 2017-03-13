@@ -9,10 +9,10 @@
 			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
 				new ZEngineObject(function(){
 					this.Transform.Position[0] = 0;
-					this.AddComponent("Text", {Content: "0", FontSize: "42px"});
+					this.AddComponent("Text", {FontSize: "42px"}).Content = "0";
 
 					ZEngine.Every(1000, (I) => {
-						this.GetComponent("Text").Config.Content = I;
+						this.GetComponent("Text").Content = I;
 						if(I >= 10) return true;
 					});
 

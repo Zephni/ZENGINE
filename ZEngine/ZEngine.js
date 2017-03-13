@@ -305,6 +305,8 @@ ZEngineComponents.Transform = function Transform(Obj){
 	this.Size = [0, 0];
 	this.layer = 0;
 	this.Layer = 0;
+
+	return this;
 }
 
 Object.defineProperty(ZEngineComponents.Transform.prototype, "Layer", {
@@ -329,19 +331,21 @@ ZEngineComponents.Text = function(Obj, Data){
 	this.Obj = Obj;
 
 	this.Config = {
-		Content: "",
 		Font: "sans-serif",
 		Color: "#111111",
 		FontSize: "18px"
 	}; for(var I in Data) this.Config[I] = Data[I];
 
+	this.Content = "";
 	var Transform = this.Obj.GetComponent("Transform");
 
 	this.Draw = () => {
 		ZEngine.Canvas2D.font = this.Config.FontSize + " " + this.Config.Font;
 		ZEngine.Canvas2D.fillStyle = this.Config.Color;
-		ZEngine.Canvas2D.fillText(this.Config.Content, Transform.Position[0], Transform.Position[1]);
+		ZEngine.Canvas2D.fillText(this.Content, Transform.Position[0], Transform.Position[1]);
 	}
+
+	return this;
 }
 
 // Sprite
@@ -394,6 +398,8 @@ ZEngineComponents.Sprite = function(Obj, Data){
 			);
 		}
 	}
+
+	return this;
 }
 
 // Collider
@@ -469,6 +475,8 @@ ZEngineComponents.Collider = function(Obj, Data){
 	this.Draw = () => {
 		if(this.Config.ShowOutline) this.DrawRect(this.Rect, this.Config.OutlineColor);
 	}
+
+	return this;
 }
 
 Object.defineProperty(ZEngineComponents.Collider.prototype, "Rect", {
@@ -536,6 +544,8 @@ ZEngineComponents.Physics = function(Obj, Data){
 			}
 		}
 	}
+
+	return this;
 }
 
 // PlatformerController
@@ -569,6 +579,8 @@ ZEngineComponents.PlatformerController = function(Obj, Data){
 			if(Physics.MoveX <= this.Config.Deceleration) Physics.MoveX = 0;
 		}
 	}
+
+	return this;
 }
 
 // TopDownRPGController
@@ -616,4 +628,6 @@ ZEngineComponents.TiledRPGController = function(Obj, Data){
 		if(Transform.Position[0] == this.OrigX + this.MoveX) this.MoveX = 0;
 		if(Transform.Position[1] == this.OrigY + this.MoveY) this.MoveY = 0;
 	}
+	
+	return this;
 }
