@@ -52,27 +52,44 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			ZEngine.ScrollBuffer = [-1, -1];
 
 			// Listeners
-			document.addEventListener("keydown", function(e){
+			ZEngine.Canvas.addEventListener("keydown", function(e){
 				ZEngine.Input.LastKeyDown = e.keyCode;
-				if(ZEngine.Input.KeysDown !== undefined && ZEngine.Input.KeysDown != false)
-					ZEngine.Input.KeysDown[e.keyCode] = true;
-
-				if(e.keyCode < 112 || e.keyCode > 123) // If not F key, prevent default
-					e.preventDefault()
-				
+				ZEngine.Input.KeysDown[e.keyCode] = true;
+				e.preventDefault();
 				return false;
 			}, false);
 
-			document.addEventListener("keyup", function(e){
+			ZEngine.Canvas.addEventListener("keyup", function(e){
 				ZEngine.Input.KeysDown[e.keyCode] = false;
-				e.preventDefault()
+				e.preventDefault();
+				return false;
+			}, false);
+
+			ZEngine.Canvas.addEventListener("mousedown", function(e){
+				var code = (e.keyCode || e.which);
+				ZEngine.Input.LastClickDown = code;
+				ZEngine.Input.LastClickLocation = [ZEngine.Scroll[0] + e.clientX, ZEngine.Scroll[1] + e.clientY];
+				ZEngine.Input.ClicksDown[code] = true;
+				e.preventDefault();
+				return false;
+			}, false);
+
+			ZEngine.Canvas.addEventListener("mouseup", function(e){
+				var code = (e.keyCode || e.which);
+				ZEngine.Input.ClicksDown[code] = false;
+				e.preventDefault();
+				return false;
+			}, false);
+
+			ZEngine.Canvas.addEventListener("contextmenu", function(e){
+				e.preventDefault();
 				return false;
 			}, false);
 
 			// Run
 			setInterval(function(){
 				ZEngine.Canvas.focus();
-
+				
 				if(ZEngine.Ready && !ZEngine.Paused){
 					if(LoadingSplash != null){
 						LoadingSplash = null;
@@ -102,10 +119,10 @@ ZEngine.Initialise = function(Config = null, Init = null)
 						if(ZEngine.LayeredObjects[I].Draw != null) ZEngine.LayeredObjects[I].Draw();
 					}
 
-					
-
 					// Resets
-					if(ZEngine.Input.LastKeyDown != null) ZEngine.Input.LastKeyDown = null;
+					ZEngine.Input.LastKeyDown = null;
+					ZEngine.Input.LastClickDown = null;
+					ZEngine.Input.LastClickLocation = null;
 				}
 			}, 1000 / ZEngine.Config.FPS);
 
@@ -146,8 +163,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 
 			}, 1);
 
-			if(Init != null)
-				Init();
+			if(Init != null) Init();
 		};
 	}, 0); 
 }
@@ -157,6 +173,15 @@ ZEngine.Input.KeysDown = {};
 ZEngine.Input.LastKeyDown = null;
 ZEngine.Input.KeyDown = function(code){
 	return (ZEngine.Input.KeysDown[code] !== undefined && ZEngine.Input.KeysDown[code] !== false);
+}
+
+ZEngine.Input.ClicksDown = {};
+ZEngine.Input.LastClickDown = null;
+ZEngine.Input.ClickDownLocation = null;
+ZEngine.Input.ClickUpLocation = null;
+ZEngine.Input.MouseUpLocation = null;
+ZEngine.Input.ClickDown = function(code){
+	return (ZEngine.Input.ClicksDown[code] !== undefined && ZEngine.Input.ClicksDown[code] !== false);
 }
 
 ZEngine.ObjectsWithComponent = function(Str, IgnoreObject){
@@ -614,6 +639,7 @@ ZEngineComponents.TiledRPGController = function(Obj, Data){
 			this.OrigX = Transform.Position[0];
 			this.OrigY = Transform.Position[1];
 		}
+
 		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(39) && !Collider.CollidingWith(ZEngine.ObjectsOfType(this.Config.ObsticalType, this.Obj), [Transform.Size[0], 0])) this.MoveX = Transform.Size[0];
 		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(37) && !Collider.CollidingWith(ZEngine.ObjectsOfType(this.Config.ObsticalType, this.Obj), [-Transform.Size[0], 0])) this.MoveX = -Transform.Size[0];
 		if((this.MoveX == 0 && this.MoveY == 0) && ZEngine.Input.KeyDown(38) && !Collider.CollidingWith(ZEngine.ObjectsOfType(this.Config.ObsticalType, this.Obj), [0, -Transform.Size[1]])) this.MoveY = -Transform.Size[1];

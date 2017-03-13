@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, () => {
+				new ZEngineObject(function(){
+					var TextObj = this.AddComponent("Text").Content = "Click or use arrow keys";
+
+					this.Update = () => {
+						if(ZEngine.Input.LastClickDown != null)
+							this.GetComponent("Text").Content = "Click ("+ZEngine.Input.LastClickDown+"), Location ("+ZEngine.Input.LastClickLocation[0]+", "+ZEngine.Input.LastClickLocation[1]+")";
+
+						if(ZEngine.Input.KeyDown(37)) this.Transform.Position[0] -= 1;
+						if(ZEngine.Input.KeyDown(38)) this.Transform.Position[1] -= 1;
+						if(ZEngine.Input.KeyDown(39)) this.Transform.Position[0] += 1;
+						if(ZEngine.Input.KeyDown(40)) this.Transform.Position[1] += 1;
+					}
+				});
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>ZEngine.Input</h2>
+
+			<p>As a test, click the canvas with different mouse button, and use the arrow keys to move the text around.</p>
+
+			<p>Input can be tracked by using the <code>ZEngine.Input</code> object. Both clicks (<code>ClickDown</code>, <code>LastClickDown</code>) and keys (<code>KeyDown</code>, <code>LastKeyDown</code>) use the same notation, but clicks have some extra properties so we will use that as an example:</p>
+
+			<h3>Both Clicks/Keys</h3>
+			<codeblock>ZEngine.Input.ClickDown(KeyCode)</codeblock>
+			<p>This will return true every frame that a click is down with the passed KeyCode. This works the same way for <code>KeyDown(KeyCode)</code>.</p>
+			
+			<codeblock>ZEngine.Input.LastClickDown</codeblock>
+			<p>This will return the keycode for the last click, on the frame it was triggered. This works the same way for <code>LastKeyDown</code>.</p>
+
+			<codeblock>ZEngine.Input.ClicksDown</codeblock>
+			<p>Is an object containing all of the current clicks that are active. This works the same way for <code>KeysDown</code>.</p>
+
+			<h3>Only Clicks</h3>
+			<codeblock>ZEngine.Input.ClickDownLocation</codeblock>
+			<p>This will return the last click down location as a [X, Y] point value</p>
+
+			<codeblock>ZEngine.Input.ClickUpLocation</codeblock>
+			<p>This will return the last click up location as a [X, Y] point value</p>
+
+			<codeblock>ZEngine.Input.MouseLocation</codeblock>
+			<p>This will return the current [X, Y] point value location of the mouse</p>
+		</div>
+	</body>
+</html>
