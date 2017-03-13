@@ -1,2 +1,1 @@
-Layer coefficients? Object creation when scrolled/scrolling.. need to check if this works properly
 Add sound, play/pause/volume (will need this.Ready checking on loading)

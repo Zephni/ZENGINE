@@ -91,7 +91,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 						ZEngine.LayeredObjects = ZEngine.OrderByLayer(ZEngine.Objects);
 						ZEngine.UpdateLayers = false;
 					}
-					
+
 					for(var I in ZEngine.LayeredObjects){
 						for(var C in ZEngine.LayeredObjects[I].components){
 							if(ZEngine.LayeredObjects[I].components[C].Update !== undefined) ZEngine.LayeredObjects[I].components[C].Update();
@@ -102,6 +102,9 @@ ZEngine.Initialise = function(Config = null, Init = null)
 						if(ZEngine.LayeredObjects[I].Draw != null) ZEngine.LayeredObjects[I].Draw();
 					}
 
+					
+
+					// Resets
 					if(ZEngine.Input.LastKeyDown != null) ZEngine.Input.LastKeyDown = null;
 				}
 			}, 1000 / ZEngine.Config.FPS);
@@ -234,6 +237,7 @@ ZEngineObject = function(Init = null)
 	
 	// Custom methods
 	this.Update = null;
+	this.Draw = null;
 
 	// Initiation function (Ready by default, components will set to non ready if needed)
 	this.Ready = true;
