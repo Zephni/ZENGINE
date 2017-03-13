@@ -14,13 +14,6 @@
 					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "green"});
 				});
 
-				var Pickup = new ZEngineObject(function(){
-					this.Prefab = true;
-					this.Types = ["Pickup"];
-					this.Transform.Size = [16, 16];
-					this.AddComponent("Collider", {ShowOutline: true, OutlineColor: "blue"});
-				});
-
 				// PObject
 				var PObject = new ZEngineObject(function(){
 					this.Prefab = true;
@@ -40,13 +33,13 @@
 				var LevelExample = [
 					"1111111111111111111111111",
 					"1                       1",
-					"1              O O O    1",
+					"1                       1",
 					"1    11111111111111111  1",
 					"1O                      1",
-					"111           O         1",
+					"111                     1",
 					"11            11       11",
-					"11  1      P          111",
-					"11        111     O   1111",
+					"11         P          111",
+					"11        111         1111",
 					"1111111111111111111111111",
 				];
 
@@ -56,8 +49,6 @@
 							Obstical.Create(function(){this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];});
 						else if(LevelExample[Y][X] == "P")
 							PObject.Create(function(){this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];});
-						else if(LevelExample[Y][X] == "O")
-							Pickup.Create(function(){this.Transform.Position = [16 + (X * 32), 16 + (Y * 32)];});
 					}
 				}
 			});
@@ -68,7 +59,7 @@
 		<div id="info">
 			<h2>PlatformerController / Physics</h2>
 
-			<p>Try using your arrow keys and the "Z" key to move about the box above and collect the blue pickups.</p>
+			<p>Try using your arrow keys and the "Z" key to move about the box above.</p>
 
 			<p>The <code>PlatformerController</code> component uses the <code>Physics</code> component and makes a controllable character with keyboard input.</p>
 

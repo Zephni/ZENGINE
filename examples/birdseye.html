@@ -18,15 +18,9 @@
 					this.Prefab = true;
 					this.Transform.Size = [32, 32];
 					this.Transform.Position = [380, 237];
-					var TiledRPGController = this.AddComponent("TiledRPGController", {Speed: 2, ShowOutline: true});
+					this.AddComponent("BirdsEyeController", {Speed: 2, ShowOutline: true});
 					this.Update = function(){
 						ZEngine.Scroll = this.Transform.Position;
-
-						if(TiledRPGController.StepComplete){
-							this.GetComponent("Collider").ObjectsColliding(ZEngine.ObjectsOfType("Pickup"), function(Obj){
-								Obj.Destroy();
-							});
-						}
 					}
 				});
 
@@ -59,19 +53,18 @@
 		<canvas id="ZEngineCanvas"></canvas>
 
 		<div id="info">
-			<h2>TiledRPGController</h2>
+			<h2>BirdsEyeController</h2>
 
 			<p>Try using your arrow keys to move around.</p>
 
-			<p>The <code>TiledRPGController</code> will allow your player to only move in blocks based on it's size, like a classic RPG. It supports the following options when initiating:</p>
+			<p>The <code>BirdsEyeController</code> will allow your player to only move in blocks based on it's size, like a classic RPG. It supports the following options when initiating:</p>
 
 			<codeblock>
 				Speed: 1,
 				ObsticalType: "Obstical"
 			</codeblock>
 
-			<p><code>Speed</code> is how many pixels per frame the object moves between full "steps". Note at the moment this will have to be a number divisible by the amount of pixels in a whole step, in other words if your
-				object is 32 pixels in width/height: 1, 2 or 4 would be viable options.</p>
+			<p><code>Speed</code> is how many pixels to move in a single <code>Update</code>.</p>
 
 			<p><code>ObsticalType</code> is used to distinguish which type of objects should be "solid" to collide with. By default, if the object's <code>Types</code> value is not set when adding a collider component ZEngine will automatically set the type to "Obstical", if you wish to change this you can do so when instanciating an object:</p>
 

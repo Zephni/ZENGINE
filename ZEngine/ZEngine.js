@@ -539,9 +539,8 @@ ZEngineComponents.Physics = function(Obj, Data){
 
 			// Check if grounded, or too deep in ground
 			this.IsGrounded = false;
-			for(var I in ColliderObjects){
+			for(var I in ColliderObjects)
 				if(Collider.CollidingWith(ColliderObjects[I], [0, 1])) this.IsGrounded = true;
-			}
 		}
 	}
 
@@ -627,6 +626,52 @@ ZEngineComponents.TiledRPGController = function(Obj, Data){
 
 		if(Transform.Position[0] == this.OrigX + this.MoveX) this.MoveX = 0;
 		if(Transform.Position[1] == this.OrigY + this.MoveY) this.MoveY = 0;
+	}
+	
+	return this;
+}
+
+// BirdsEyeController
+ZEngineComponents.BirdsEyeController = function(Obj, Data){
+	// Setup
+	this.Obj = Obj;
+
+	this.Config = {
+		Speed: 1,
+		ObsticalType: "Obstical",
+		ShowOutline: false
+	}; for(var I in Data) this.Config[I] = Data[I];
+
+	var Transform = this.Obj.Transform;
+	var Collider = this.Obj.AddComponent("Collider", {ShowOutline: this.Config.ShowOutline});
+
+	this.MoveX = 0;
+	this.MoveY = 0;
+
+	// Update
+	this.Update = () => {
+		if(ZEngine.Input.KeyDown(39)) this.MoveX = this.Config.Speed;
+		if(ZEngine.Input.KeyDown(37)) this.MoveX = -this.Config.Speed;
+		if(ZEngine.Input.KeyDown(38)) this.MoveY = -this.Config.Speed;
+		if(ZEngine.Input.KeyDown(40)) this.MoveY = this.Config.Speed;
+
+		// Get collider objects
+		var ColliderObjects = ZEngine.ObjectsOfType(this.Config.ObsticalType, this.Obj);
+
+		// X move
+		for(var X = 0; X < Math.abs(this.MoveX); X++){
+			if(Collider.CollidingWith(ColliderObjects, [(this.MoveX > 0) ? 1 : -1, 0])) this.MoveX = 0;
+			if(this.MoveX != 0) Transform.Position[0] += (this.MoveX > 0) ? 1 : -1;
+		}
+
+		// Y move
+		for(var Y = 0; Y < Math.abs(this.MoveY); Y++){ 
+			if(Collider.CollidingWith(ColliderObjects, [0, (this.MoveY > 0) ? 1 : -1])) this.MoveY = 0;
+			if(this.MoveY != 0) Transform.Position[1] += (this.MoveY > 0) ? 1 : -1;
+		}
+
+		this.MoveX = 0;
+		this.MoveY = 0;
 	}
 	
 	return this;
