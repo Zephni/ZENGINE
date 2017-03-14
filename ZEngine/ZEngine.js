@@ -116,7 +116,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 						}
 
 						if(ZEngine.LayeredObjects[I].Update != null) ZEngine.LayeredObjects[I].Update();
-						if(ZEngine.LayeredObjects[I].Draw != null) ZEngine.LayeredObjects[I].Draw();
+						if(ZEngine.LayeredObjects[I] != undefined && ZEngine.LayeredObjects[I].Draw != null) ZEngine.LayeredObjects[I].Draw();
 					}
 
 					// Resets
@@ -238,6 +238,31 @@ ZEngine.WhileDo = function(While, Do, Callback = null){
 		else{
 			clearInterval(Interval);
 			if(Callback !== null) Callback();
+		}
+	}, 0);
+}
+
+ZEngine.LoadScript = function(File, Callback){
+	var ScriptElement = document.createElement("script");
+	ScriptElement.src = File;
+	ScriptElement.type = "text/javascript";
+	ScriptElement.onload = Callback;
+	document.querySelector("head").appendChild(ScriptElement);
+}
+
+ZEngine.LoadScripts = function(Files, Callback){
+	var ScriptsLoaded = [];
+	
+	for(var I in Files){
+		ZEngine.LoadScript(Files[I], function(){
+			ScriptsLoaded.push(Files[I]);
+		});
+	}
+
+	var ScriptsLoadedInterval = setInterval(function(){
+		if(ScriptsLoaded.length >= Files.length){
+			clearInterval(ScriptsLoadedInterval);
+			Callback();
 		}
 	}, 0);
 }
@@ -734,8 +759,8 @@ class ZEngineScene
 
 	Run()
 	{
-		if(ZEngineScene.GetScene(ZEngineScene.CurrentScene) != null)
-			ZEngineScene.GetScene(ZEngineScene.CurrentScene).Destruct();
+		if(ZEngineScene.Get(ZEngineScene.CurrentScene) != null)
+			ZEngineScene.Get(ZEngineScene.CurrentScene).Destruct();
 
 		ZEngineScene.CurrentScene = this.Alias;
 		this.Init();
@@ -752,7 +777,7 @@ class ZEngineScene
 ZEngineScene.CurrentScene = "";
 ZEngineScene.Scenes = {};
 
-ZEngineScene.GetScene = function(Alias)
+ZEngineScene.Get = function(Alias)
 {
 	if(ZEngineScene.Scenes[Alias] != undefined)
 		return ZEngineScene.Scenes[Alias];

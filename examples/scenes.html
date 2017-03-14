@@ -19,7 +19,7 @@
 					});
 
 					ZEngine.Wait(1000, function(){
-						ZEngineScene.GetScene("Scene2").Run();
+						ZEngineScene.Get("Scene2").Run();
 					});
 				})
 
@@ -35,11 +35,11 @@
 					});
 
 					ZEngine.Wait(1000, function(){
-						ZEngineScene.GetScene("Scene1").Run();
+						ZEngineScene.Get("Scene1").Run();
 					});
 				})
 
-				ZEngineScene.GetScene("Scene1").Run();
+				ZEngineScene.Get("Scene1").Run();
 			});
 		</script>
 
@@ -59,7 +59,7 @@
 			<p>This will automatically add the scene "Scene1" to the static ZEngineScene.Scenes list, which is retrievable by using:</p>
 
 			<codeblock>
-				ZEngineScene.GetScene("Scene1");
+				ZEngineScene.Get("Scene1");
 			</codeblock>
 
 			<p>And can be run with:</p>
