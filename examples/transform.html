@@ -53,6 +53,14 @@
 			<p><code>Size</code> is a point value [X, Y]. And is the litteral pixel width/height of the object</p>
 
 			<p><code>Layer</code> places the object in an order list to be rendered. The higher the number the later <code>Draw</code> will be called.</p>
+
+			<p>A handy method  if you wish to change a size based on it's aspect ratio is <code>AspectSize(Index, Size)</code>. "Index" should be 0 (width) or 1 (height), and "Size" is the value to set it to, then the other index will be sized based on the aspect of the origional size, example below:</p>
+
+			<codeblock>
+				this.Transform.AspectSize(0, 100);
+			</codeblock>
+
+			<p>Given a object of size [200, 100], the above would set it's new size to [100, 50].</p>
 		</div>
 	</body>
 </html>

@@ -331,6 +331,21 @@ ZEngineComponents.Transform = function Transform(Obj){
 	this.layer = 0;
 	this.Layer = 0;
 
+	this.aspectSizeBuffer = null;
+	this.AspectSize = function(index, value){
+		var fromto = [];
+		if(index == 0) fromto = [0, 1];
+		if(index == 1) fromto = [1, 0];
+
+		if(this.Size[0] > 0 && this.Size[1] > 0){
+			var other = (this.Size[fromto[1]] * value / this.Size[fromto[0]]);
+			this.Size[fromto[0]] = value;
+			this.Size[fromto[1]] = other;
+		}else{
+			this.aspectSizeBuffer = [index, value];
+		}
+	}
+
 	return this;
 }
 
@@ -381,10 +396,14 @@ ZEngineComponents.Sprite = function(Obj, Data){
 	this.Img = document.createElement("img");
 	this.Img.src = Data.Src;
 	this.Img.onload = () => {
-		this.Ready = true;
 		var Transform = Obj.GetComponent("Transform");
 		if(Transform.Size[0] == 0) Transform.Size[0] = (Data.RectWidth) ? Data.RectWidth : this.Img.width;
 		if(Transform.Size[1] == 0) Transform.Size[1] = (Data.RectHeight) ? Data.RectHeight : this.Img.height;
+
+		if(Transform.aspectSizeBuffer != null) Transform.AspectSize(Transform.aspectSizeBuffer[0], Transform.aspectSizeBuffer[1]);
+
+		this.Ready = true;
+		if(Data.OnLoad != undefined) Data.OnLoad();
 	}
 	
 	this.Rect = [(Data.RectX) ? Data.RectX : 0,(Data.RectY) ? Data.RectY : 0,(Data.RectWidth) ? Data.RectWidth : 0,(Data.RectHeight) ? Data.RectHeight : 0];

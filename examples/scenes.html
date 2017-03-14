@@ -14,7 +14,7 @@
 
 					new ZEngineObject(function(){
 						this.Transform.Position[1] = 80;
-						this.Transform.Size = [200, 200];
+						this.Transform.AspectSize(0, 200);
 						this.AddComponent("Sprite", {Src: "assets/ZEngineLogo.png"});
 					});
 
@@ -30,7 +30,7 @@
 
 					new ZEngineObject(function(){
 						this.Transform.Position[1] = 220;
-						this.Transform.Size = [64, 64];
+						this.Transform.AspectSize(0, 64);
 						this.AddComponent("Sprite", {Src: "assets/Box.png"});
 					});
 
