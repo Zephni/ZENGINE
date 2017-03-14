@@ -42,7 +42,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			ZEngine.Canvas.tabIndex = 1;
 			ZEngine.Canvas.width = ZEngine.Config.Width;
 			ZEngine.Canvas.height = ZEngine.Config.Height;
-			ZEngine.Canvas.style["border"] = "1px solid #AAAAAA";
+			ZEngine.Canvas.style.cssText = "border: 1px solid #AAAAAA;";
 
 			if(ZEngine.Config.Parent != null) document.querySelector(ZEngine.Config.Parent).appendChild(ZEngine.Canvas);
 
@@ -455,6 +455,7 @@ ZEngineComponents.Sprite = function(Obj, Data){
 	// Animation
 	this.Animation = null;
 	this.Animate = (animation) => {
+		if(this.Animation == null || (this.Animation.Frames != animation.Frames && this.Animation.Speed != animation.Speed))
 		this.Animation = {Frames: [], Speed: 10, CurrentFrame: 0, Iterator: 0};
 		for(var I in animation) this.Animation[I] = animation[I];
 	}
