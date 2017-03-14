@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas", LoadScripts: ["assets/AScript.js"]}, () => {
+				ZEngine.GetObject("Test").GetComponent("Text").Content = "Script has loaded!";
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>ZEngine.LoadScript/s</h2>
+
+			<p>To load a script and run a callback once it has loaded you can use:</p>
+
+			<codeblock>
+				ZEngine.LoadScript("Script.js", function(){<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;// Script.js has loaded<br />
+				});
+			</codeblock>
+
+			<p>If you wish to pull in multiple scripts you can use:</p>
+
+			<codeblock>
+				ZEngine.LoadScript(["Script1.js", "Script2.js"], function(){<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;// All scripts have loaded<br />
+				});
+			</codeblock>
+
+			<p>Finally, you can initialise ZEngine with scripts to load, so the main <code>Initialise</code> method will only be called once all assets including scripts have loaded:</p>
+
+			<codeblock>
+				ZEngine.Initialise({Canvas: "canvas", LoadScripts: ["Script.js"]}, () => {<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;// Script.js has loaded<br />
+				});
+			</codeblock>			
+		</div>
+	</body>
+</html>

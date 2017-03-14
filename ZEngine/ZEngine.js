@@ -12,7 +12,8 @@ ZEngine.Config = {
 	FPS: 60,
 	Path: "ZEngine",
 	Canvas: null,
-	Parent: null
+	Parent: null,
+	LoadScripts: []
 };
 
 ZEngine.Prefabs = [];
@@ -138,6 +139,16 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			}
 			// /Loading splash
 
+			var ScriptsLoaded = false;
+
+			if(ZEngine.Config.LoadScripts.length > 0){
+				ZEngine.LoadScripts(ZEngine.Config.LoadScripts, () => {
+					ScriptsLoaded = true;
+				});
+			}else{
+				ScriptsLoaded = true;
+			}
+
 			var LoadingInterval = setInterval(function(){
 				var NumReady = 0;
 				var CheckObjects = [].concat(ZEngine.Objects, ZEngine.Prefabs);
@@ -147,8 +158,10 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					else if(CheckObjects[I].HasComponent("Sprite") && CheckObjects[I].GetComponent("Sprite").Ready) NumReady++;
 				}
 
-				if(NumReady >= CheckObjects.length)
+				if(NumReady >= CheckObjects.length && ScriptsLoaded){
 					ZEngine.Ready = true;
+					if(Init != null) Init();
+				}
 
 				// Loading update
 				ZEngine.Canvas2D.fillStyle = "#FFFFFF";
@@ -162,8 +175,6 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				// /Loading update
 
 			}, 1);
-
-			if(Init != null) Init();
 		};
 	}, 0); 
 }
@@ -200,6 +211,14 @@ ZEngine.ObjectsOfType = function(Str, IgnoreObject){
 			ObjList.push(ZEngine.Objects[I]);
 
 	return ObjList;
+}
+
+ZEngine.GetObject = function(Str){
+	for(var I in ZEngine.Objects)
+		if(ZEngine.Objects[I].Alias == Str)
+			return ZEngine.Objects[I];
+
+	return null;
 }
 
 ZEngine.OrderByLayer = function(Objects){
