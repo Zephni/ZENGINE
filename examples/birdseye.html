@@ -17,7 +17,6 @@
 				var PObject = new ZEngineObject(function(){
 					this.Prefab = true;
 					this.Transform.Size = [32, 32];
-					this.Transform.Position = [380, 237];
 					this.AddComponent("BirdsEyeController", {Speed: 2, ShowOutline: true});
 					this.Update = function(){
 						ZEngine.Scroll = this.Transform.Position;

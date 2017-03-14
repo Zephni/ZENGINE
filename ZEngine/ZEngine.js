@@ -702,3 +702,41 @@ ZEngineComponents.BirdsEyeController = function(Obj, Data){
 	
 	return this;
 }
+
+// ZEngineScene
+class ZEngineScene
+{
+	constructor(Alias, Init)
+	{
+		this.Alias = Alias;
+		this.Init = Init;
+		ZEngineScene.Scenes[this.Alias] = this;
+	}
+
+	Run()
+	{
+		if(ZEngineScene.GetScene(ZEngineScene.CurrentScene) != null)
+			ZEngineScene.GetScene(ZEngineScene.CurrentScene).Destruct();
+
+		ZEngineScene.CurrentScene = this.Alias;
+		this.Init();
+	}
+
+	Destruct()
+	{
+		//ZEngine.Prefabs = [];
+		ZEngine.Objects = [];
+		ZEngine.LayeredObjects = [];
+	}
+}
+
+ZEngineScene.CurrentScene = "";
+ZEngineScene.Scenes = {};
+
+ZEngineScene.GetScene = function(Alias)
+{
+	if(ZEngineScene.Scenes[Alias] != undefined)
+		return ZEngineScene.Scenes[Alias];
+	else
+		return null;
+}

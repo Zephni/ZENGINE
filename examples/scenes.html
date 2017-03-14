@@ -1,0 +1,75 @@
+<html>
+	<head>
+		<title>ZEngine</title>
+		<script type="text/javascript" src="../ZEngine/ZEngine.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			ZEngine.Initialise({Path: "../ZEngine", Canvas: "#ZEngineCanvas"}, function(){
+				new ZEngineScene("Scene1", function(){
+					new ZEngineObject(function(){
+						this.AddComponent("Text").Content = "This is scene 1";
+					});
+
+					new ZEngineObject(function(){
+						this.Transform.Position[1] = 80;
+						this.Transform.Size = [200, 200];
+						this.AddComponent("Sprite", {Src: "assets/ZEngineLogo.png"});
+					});
+
+					ZEngine.Wait(1000, function(){
+						ZEngineScene.GetScene("Scene2").Run();
+					});
+				})
+
+				new ZEngineScene("Scene2", function(){
+					new ZEngineObject(function(){
+						this.AddComponent("Text").Content = "This is scene 2";
+					});
+
+					new ZEngineObject(function(){
+						this.Transform.Position[1] = 220;
+						this.Transform.Size = [64, 64];
+						this.AddComponent("Sprite", {Src: "assets/Box.png"});
+					});
+
+					ZEngine.Wait(1000, function(){
+						ZEngineScene.GetScene("Scene1").Run();
+					});
+				})
+
+				ZEngineScene.GetScene("Scene1").Run();
+			});
+		</script>
+
+		<canvas id="ZEngineCanvas"></canvas>
+
+		<div id="info">
+			<h2>ZEngineScene</h2>
+
+			<p>ZEngineScene are for handling the constructing/destructing of scenes. To create a new scene use it's constructor:</p>
+
+			<codeblock>
+				new ZEngineScene("Scene1", function(){</br >
+					&nbsp;&nbsp;&nbsp;&nbsp;// Scene ZEngine code here</br >
+				});</br >
+			</codeblock>
+
+			<p>This will automatically add the scene "Scene1" to the static ZEngineScene.Scenes list, which is retrievable by using:</p>
+
+			<codeblock>
+				ZEngineScene.GetScene("Scene1");
+			</codeblock>
+
+			<p>And can be run with:</p>
+
+			<codeblock>
+				ZEngineScene.GetScene("Scene1").Run();
+			</codeblock>
+
+			<p>Scenes can then call other scenes, once a scene is run it will "destruct" the current one, and "construct" the new one. Make sure you run your first scene within the <code>ZEngine.Initialise</code>
+				method, or atleast once the DOM has loaded.</p>
+		</div>
+	</body>
+</html>
