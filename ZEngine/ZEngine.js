@@ -13,17 +13,22 @@ ZEngine.Config = {
 	Path: "ZEngine",
 	Canvas: null,
 	Parent: null,
-	LoadScripts: []
+	LoadScripts: [],
+	Background: "#FFFFFF"
 };
 
+ZEngine.Canvas = null;
+ZEngine.Global = {};
 ZEngine.Prefabs = [];
 ZEngine.Objects = [];
 ZEngine.ScriptsLoaded = [];
-
 ZEngine.UpdateLayers = false;
 ZEngine.LayeredObjects = [];
-
-ZEngine.Canvas = null;
+ZEngine.ActualFPS = 0;
+ZEngine.Time = {
+	Date: new Date(),
+	DeltaTime: 0
+}
 
 // Methods
 ZEngine.Initialise = function(Config = null, Init = null)
@@ -88,15 +93,23 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				return false;
 			}, false);
 
+			var DeltaTimeBuffer = ZEngine.Time.Date.getTime();
+
 			// Run
 			setInterval(function(){
 				ZEngine.Canvas.focus();
 				
 				if(ZEngine.Ready && !ZEngine.Paused){
+					// Set delta time / fps
+					ZEngine.Time.Date = new Date();
+					ZEngine.Time.DeltaTime = ZEngine.Time.Date.getTime() - DeltaTimeBuffer;
+					DeltaTimeBuffer = ZEngine.Time.Date.getTime();
+					ZEngine.ActualFPS = parseInt(1000 / ZEngine.Time.DeltaTime);
+
 					if(LoadingSplash != null) LoadingSplash = null;
 
 					// Clearing and Rendering translated canvas
-					ZEngine.Canvas2D.fillStyle = "#EEEEEE";
+					ZEngine.Canvas2D.fillStyle = ZEngine.Config.Background;
 					ZEngine.Canvas2D.fillRect((ZEngine.Scroll[0] - ZEngine.Canvas.width/2), (ZEngine.Scroll[1] - ZEngine.Canvas.height/2), ZEngine.Canvas.offsetWidth, ZEngine.Canvas.offsetHeight);
 					if(ZEngine.Scroll[0] - ZEngine.Canvas.width/2 != ZEngine.ScrollBuffer[0]) ZEngine.Canvas2D.translate(ZEngine.ScrollBuffer[0] - ZEngine.Scroll[0] + ZEngine.Canvas.width/2, 0);
 					if(ZEngine.Scroll[1] - ZEngine.Canvas.height/2 != ZEngine.ScrollBuffer[1]) ZEngine.Canvas2D.translate(0, ZEngine.ScrollBuffer[1] - ZEngine.Scroll[1] + ZEngine.Canvas.height/2);
@@ -121,7 +134,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					// Resets
 					ZEngine.Input.LastKeyDown = null;
 					ZEngine.Input.LastClickDown = null;
-					ZEngine.Input.LastClickLocation = null;
+					ZEngine.Input.LastClickLocation = null;					
 				}
 			}, 1000 / ZEngine.Config.FPS);
 
