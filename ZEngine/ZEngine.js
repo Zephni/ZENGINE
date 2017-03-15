@@ -292,6 +292,18 @@ ZEngine.LoadScripts = function(Files, Callback = null){
 		}
 	}, 0);
 }
+
+ZEngine.DrawRect = function(area, color = "red"){
+	ZEngine.Canvas2D.beginPath();
+	ZEngine.Canvas2D.rect(area[0], area[1], area[2] - area[0], area[3] - area[1]);
+	ZEngine.Canvas2D.strokeStyle = color;
+	ZEngine.Canvas2D.lineWidth = 1;
+	ZEngine.Canvas2D.stroke();
+}
+
+ZEngine.RectOverlapping = function(Rect, OtherRect){
+	return (Rect[0] < OtherRect[2] && Rect[2] > OtherRect[0] && Rect[1] < OtherRect[3] && Rect[3] > OtherRect[1]);
+}
 // /Special
 
 /*
@@ -535,11 +547,8 @@ ZEngineComponents.Collider = function(Obj, Data){
 	}
 
 	this.AreaCollidingWith = function(X, Y, X2, Y2, Other){
-		var Rect = [X, Y, X2, Y2];
-		var OtherRect = Other.GetComponent("Collider").Rect;
-		if(this.Config.ShowAreaOutline) this.DrawRect(Rect, this.Config.AreaOutlineColor);
-		if(Rect[0] < OtherRect[2] && Rect[2] > OtherRect[0] && Rect[1] < OtherRect[3] && Rect[3] > OtherRect[1])
-			return true;
+		if(this.Config.ShowAreaOutline) ZEngine.DrawRect(Rect, this.Config.AreaOutlineColor);
+		return ZEngine.RectOverlapping([X, Y, X2, Y2], Other.GetComponent("Collider").Rect);
 	}
 
 	this.ObjectColliding = function(Other, Rect = null){
@@ -562,16 +571,8 @@ ZEngineComponents.Collider = function(Obj, Data){
 		return ObjectsArr;
 	}
 
-	this.DrawRect = function(Rect, Color){
-		ZEngine.Canvas2D.beginPath();
-		ZEngine.Canvas2D.rect(Rect[0], Rect[1], Rect[2] - Rect[0], Rect[3] - Rect[1]);
-		ZEngine.Canvas2D.strokeStyle = Color;
-		ZEngine.Canvas2D.lineWidth = 1;
-		ZEngine.Canvas2D.stroke();
-	}
-
 	this.Draw = () => {
-		if(this.Config.ShowOutline) this.DrawRect(this.Rect, this.Config.OutlineColor);
+		if(this.Config.ShowOutline) ZEngine.DrawRect(this.Rect, this.Config.OutlineColor);
 	}
 
 	return this;
