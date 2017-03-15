@@ -18,6 +18,7 @@ ZEngine.Config = {
 
 ZEngine.Prefabs = [];
 ZEngine.Objects = [];
+ZEngine.ScriptsLoaded = [];
 
 ZEngine.UpdateLayers = false;
 ZEngine.LayeredObjects = [];
@@ -92,10 +93,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				ZEngine.Canvas.focus();
 				
 				if(ZEngine.Ready && !ZEngine.Paused){
-					if(LoadingSplash != null){
-						LoadingSplash = null;
-						clearInterval(LoadingInterval);
-					}
+					if(LoadingSplash != null) LoadingSplash = null;
 
 					// Clearing and Rendering translated canvas
 					ZEngine.Canvas2D.fillStyle = "#EEEEEE";
@@ -139,14 +137,8 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			}
 			// /Loading splash
 
-			var ScriptsLoaded = false;
-
 			if(ZEngine.Config.LoadScripts.length > 0){
-				ZEngine.LoadScripts(ZEngine.Config.LoadScripts, () => {
-					ScriptsLoaded = true;
-				});
-			}else{
-				ScriptsLoaded = true;
+				ZEngine.LoadScripts(ZEngine.Config.LoadScripts);
 			}
 
 			var LoadingInterval = setInterval(function(){
@@ -158,9 +150,11 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					else if(CheckObjects[I].HasComponent("Sprite") && CheckObjects[I].GetComponent("Sprite").Ready) NumReady++;
 				}
 
-				if(NumReady >= CheckObjects.length && ScriptsLoaded){
+				if(NumReady >= CheckObjects.length && ZEngine.ScriptsLoaded.length >= ZEngine.Config.LoadScripts.length){
 					ZEngine.Ready = true;
 					if(Init != null) Init();
+					if(ZEngine.Debug != undefined) ZEngine.Debug();
+					clearInterval(LoadingInterval);
 				}
 
 				// Loading update
@@ -168,7 +162,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				ZEngine.Canvas2D.fillRect(0, 0, ZEngine.Canvas.width, ZEngine.Canvas.height);
 				if(LSwidth !== null && LoadingSplash != null){
 					ZEngine.Canvas2D.drawImage(LoadingSplash, 0, 0, LoadingSplash.width, LoadingSplash.height, ZEngine.Canvas.width/2 - LSwidth/2, ZEngine.Canvas.height/2 - LSheight/2 - 20, LSwidth, LSheight);
-					var PercentLoaded = parseInt(NumReady / CheckObjects.length * 100);
+					var PercentLoaded = parseInt((NumReady + ZEngine.ScriptsLoaded.length) / (CheckObjects.length + ZEngine.Config.LoadScripts.length) * 100);
 					ZEngine.Canvas2D.font = "20px Arial"; ZEngine.Canvas2D.fillStyle = "#222222"; ZEngine.Canvas2D.textAlign = "center";
 					ZEngine.Canvas2D.fillText("loading assets: "+PercentLoaded +"%",  ZEngine.Canvas.width/2,  ZEngine.Canvas.height/2 + LSheight/4);
 				}
@@ -269,19 +263,19 @@ ZEngine.LoadScript = function(File, Callback){
 	document.querySelector("head").appendChild(ScriptElement);
 }
 
-ZEngine.LoadScripts = function(Files, Callback){
-	var ScriptsLoaded = [];
+ZEngine.LoadScripts = function(Files, Callback = null){
+	ZEngine.ScriptsLoaded = [];
 	
 	for(var I in Files){
 		ZEngine.LoadScript(Files[I], function(){
-			ScriptsLoaded.push(Files[I]);
+			ZEngine.ScriptsLoaded.push(Files[I]);
 		});
 	}
 
 	var ScriptsLoadedInterval = setInterval(function(){
-		if(ScriptsLoaded.length >= Files.length){
+		if(ZEngine.ScriptsLoaded.length >= Files.length){
 			clearInterval(ScriptsLoadedInterval);
-			Callback();
+			if(Callback != null) Callback();
 		}
 	}, 0);
 }
@@ -417,7 +411,8 @@ ZEngineComponents.Text = function(Obj, Data){
 	this.Config = {
 		Font: "sans-serif",
 		Color: "#111111",
-		FontSize: "18px"
+		FontSize: "18px",
+		TextAlign: "center"
 	}; for(var I in Data) this.Config[I] = Data[I];
 
 	this.Content = "";
@@ -426,6 +421,7 @@ ZEngineComponents.Text = function(Obj, Data){
 	this.Draw = () => {
 		ZEngine.Canvas2D.font = this.Config.FontSize + " " + this.Config.Font;
 		ZEngine.Canvas2D.fillStyle = this.Config.Color;
+		ZEngine.Canvas2D.textAlign = this.Config.TextAlign;
 		ZEngine.Canvas2D.fillText(this.Content, Transform.Position[0], Transform.Position[1]);
 	}
 
@@ -606,6 +602,7 @@ ZEngineComponents.Physics = function(Obj, Data){
 		if(!this.Config.Kinetic){
 			// Apply gravity if not grounded
 			if(!this.IsGrounded) this.MoveY += this.Config.Gravity;
+			//console.log(this.MoveY);
 
 			// Clamp MoveX/Y values to MaxX/Y
 			this.MoveX = Math.min(Math.max(this.MoveX, -this.Config.MaxX), this.Config.MaxX);
