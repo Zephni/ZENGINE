@@ -24,10 +24,10 @@ ZEngine.Objects = [];
 ZEngine.ScriptsLoaded = [];
 ZEngine.UpdateLayers = false;
 ZEngine.LayeredObjects = [];
-ZEngine.ActualFPS = 0;
 ZEngine.Time = {
 	Date: new Date(),
-	DeltaTime: 0
+	DeltaTime: 0,
+	ActualFPS: 0
 }
 
 // Methods
@@ -104,7 +104,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					ZEngine.Time.Date = new Date();
 					ZEngine.Time.DeltaTime = ZEngine.Time.Date.getTime() - DeltaTimeBuffer;
 					DeltaTimeBuffer = ZEngine.Time.Date.getTime();
-					ZEngine.ActualFPS = parseInt(1000 / ZEngine.Time.DeltaTime);
+					ZEngine.Time.ActualFPS = parseInt(1000 / ZEngine.Time.DeltaTime);
 
 					if(LoadingSplash != null) LoadingSplash = null;
 
