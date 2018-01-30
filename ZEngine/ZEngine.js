@@ -62,7 +62,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			ZEngine.Canvas.addEventListener("keydown", function(e){
 				ZEngine.Input.LastKeyDown = e.keyCode;
 				ZEngine.Input.KeysDown[e.keyCode] = true;
-				e.preventDefault();
+				//e.preventDefault();
 				return false;
 			}, false);
 
@@ -77,19 +77,19 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				ZEngine.Input.LastClickDown = code;
 				ZEngine.Input.LastClickLocation = [ZEngine.Scroll[0] + e.clientX, ZEngine.Scroll[1] + e.clientY];
 				ZEngine.Input.ClicksDown[code] = true;
-				e.preventDefault();
+				//e.preventDefault();
 				return false;
 			}, false);
 
 			ZEngine.Canvas.addEventListener("mouseup", function(e){
 				var code = (e.keyCode || e.which);
 				ZEngine.Input.ClicksDown[code] = false;
-				e.preventDefault();
+				//e.preventDefault();
 				return false;
 			}, false);
 
 			ZEngine.Canvas.addEventListener("contextmenu", function(e){
-				e.preventDefault();
+				//e.preventDefault();
 				return false;
 			}, false);
 
@@ -458,6 +458,8 @@ ZEngineComponents.Sprite = function(Obj, Data){
 	// Setup
 	this.Ready = false;
 	
+	this.Opacity = 1;
+
 	this.Img = document.createElement("img");
 	this.Img.src = Data.Src;
 	this.Img.onload = () => {
@@ -495,6 +497,8 @@ ZEngineComponents.Sprite = function(Obj, Data){
 		var Transform = Obj.GetComponent("Transform");
 		if(this.Ready && Transform != null)
 		{
+			ZEngine.Canvas2D.globalAlpha = this.Opacity;
+
 			ZEngine.Canvas2D.drawImage(
 				this.Img,
 				this.Rect[0],
