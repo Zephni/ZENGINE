@@ -186,6 +186,17 @@ ZEngine.Initialise = function(Config = null, Init = null)
 	}, 0); 
 }
 
+ZEngine.GetCanvasCenter = function(Axis = null){
+	var Temp = [ZEngine.Canvas.width/2 + ZEngine.Scroll[0], ZEngine.Canvas.height/2 + ZEngine.Scroll[1]];
+	
+	if(Axis == 0)
+		return Temp[0];
+	else if(Axis == 1)
+		return Temp[1];
+	else
+		return Temp;
+}
+
 ZEngine.Input = function(){}
 ZEngine.Input.KeysDown = {};
 ZEngine.Input.LastKeyDown = null;
