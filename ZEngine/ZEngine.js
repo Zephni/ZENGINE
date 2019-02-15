@@ -48,7 +48,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 			ZEngine.Canvas.tabIndex = 1;
 			ZEngine.Canvas.width = ZEngine.Config.Width;
 			ZEngine.Canvas.height = ZEngine.Config.Height;
-			ZEngine.Canvas.style.cssText = "border: 1px solid #AAAAAA;";
+			//ZEngine.Canvas.style.cssText = "border: 1px solid #AAAAAA;";
 
 			if(ZEngine.Config.Parent != null) document.querySelector(ZEngine.Config.Parent).appendChild(ZEngine.Canvas);
 
@@ -100,6 +100,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				ZEngine.Canvas.focus();
 				
 				if(ZEngine.Ready && !ZEngine.Paused){
+					ZEngine.Canvas2D.save();
 					// Set delta time / fps
 					ZEngine.Time.Date = new Date();
 					ZEngine.Time.DeltaTime = ZEngine.Time.Date.getTime() - DeltaTimeBuffer;
@@ -134,7 +135,9 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					// Resets
 					ZEngine.Input.LastKeyDown = null;
 					ZEngine.Input.LastClickDown = null;
-					ZEngine.Input.LastClickLocation = null;					
+					ZEngine.Input.LastClickLocation = null;
+
+					ZEngine.Canvas2D.restore();
 				}
 			}, 1000 / ZEngine.Config.FPS);
 
@@ -169,7 +172,7 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					if(ZEngine.Debug != undefined) ZEngine.Debug();
 					clearInterval(LoadingInterval);
 				}
-
+				
 				// Loading update
 				ZEngine.Canvas2D.fillStyle = "#FFFFFF";
 				ZEngine.Canvas2D.fillRect(0, 0, ZEngine.Canvas.width, ZEngine.Canvas.height);
@@ -180,21 +183,14 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					ZEngine.Canvas2D.fillText("loading assets: "+PercentLoaded +"%",  ZEngine.Canvas.width/2,  ZEngine.Canvas.height/2 + LSheight/4);
 				}
 				// /Loading update
-
+				
 			}, 1);
 		};
 	}, 0); 
 }
 
 ZEngine.GetCanvasCenter = function(Axis = null){
-	var Temp = [ZEngine.Canvas.width/2 + ZEngine.Scroll[0], ZEngine.Canvas.height/2 + ZEngine.Scroll[1]];
-	
-	if(Axis == 0)
-		return Temp[0];
-	else if(Axis == 1)
-		return Temp[1];
-	else
-		return Temp;
+	return (Axis == 0) ? ZEngine.Canvas.width/2 + ZEngine.Scroll[0] : (Axis == 1) ? ZEngine.Canvas.height/2 + ZEngine.Scroll[1] : [ZEngine.Canvas.width/2 + ZEngine.Scroll[0], ZEngine.Canvas.height/2 + ZEngine.Scroll[1]];
 }
 
 ZEngine.Input = function(){}
@@ -402,6 +398,7 @@ ZEngineComponents.Transform = function Transform(Obj){
 	this.Position = [ZEngine.Canvas.width/2, ZEngine.Canvas.height/2];
 	this.Offset = [0.5, 0.5];
 	this.Size = [0, 0];
+	this.Rotation = 0;
 	this.layer = 0;
 	this.Layer = 0;
 
@@ -508,8 +505,17 @@ ZEngineComponents.Sprite = function(Obj, Data){
 		var Transform = Obj.GetComponent("Transform");
 		if(this.Ready && Transform != null)
 		{
+			ZEngine.Canvas2D.save();
 			ZEngine.Canvas2D.globalAlpha = this.Opacity;
 
+			if(Transform.Rotation != 0)
+			{
+				ZEngine.Canvas2D.translate((Transform.BoundingBox[0] + (Transform.Size[0]/2)), (Transform.BoundingBox[1] + (Transform.Size[1]/2)));
+				ZEngine.Canvas2D.rotate(Transform.Rotation * (Math.PI / 180));
+				ZEngine.Canvas2D.translate(-(Transform.BoundingBox[0] + (Transform.Size[0]/2)), -(Transform.BoundingBox[1] + (Transform.Size[1]/2)));
+			}
+
+			
 			ZEngine.Canvas2D.drawImage(
 				this.Img,
 				this.Rect[0],
@@ -521,6 +527,8 @@ ZEngineComponents.Sprite = function(Obj, Data){
 				Transform.Size[0],
 				Transform.Size[1]
 			);
+			
+			ZEngine.Canvas2D.restore();
 		}
 	}
 
