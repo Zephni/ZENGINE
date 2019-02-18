@@ -88,6 +88,11 @@ ZEngine.Initialise = function(Config = null, Init = null)
 				return false;
 			}, false);
 
+			ZEngine.Canvas.addEventListener("mousemove", function(e){
+				ZEngine.Input.MousePosition = ZEngine.Input.GetMousePosition(e);
+				return false;
+			}, false);
+
 			ZEngine.Canvas.addEventListener("contextmenu", function(e){
 				//e.preventDefault();
 				return false;
@@ -123,6 +128,9 @@ ZEngine.Initialise = function(Config = null, Init = null)
 					}
 
 					for(var I in ZEngine.LayeredObjects){
+						if(ZEngine.LayeredObjects[I] == undefined)
+							continue;
+						
 						for(var C in ZEngine.LayeredObjects[I].components){
 							if(ZEngine.LayeredObjects[I].components[C].Update !== undefined) ZEngine.LayeredObjects[I].components[C].Update();
 							if(ZEngine.LayeredObjects[I].components[C].Draw !== undefined) ZEngine.LayeredObjects[I].components[C].Draw();
@@ -200,6 +208,7 @@ ZEngine.Input.KeyDown = function(code){
 	return (ZEngine.Input.KeysDown[code] !== undefined && ZEngine.Input.KeysDown[code] !== false);
 }
 
+ZEngine.Input.MousePosition = [0, 0];
 ZEngine.Input.ClicksDown = {};
 ZEngine.Input.LastClickDown = null;
 ZEngine.Input.ClickDownLocation = null;
@@ -207,6 +216,24 @@ ZEngine.Input.ClickUpLocation = null;
 ZEngine.Input.MouseUpLocation = null;
 ZEngine.Input.ClickDown = function(code){
 	return (ZEngine.Input.ClicksDown[code] !== undefined && ZEngine.Input.ClicksDown[code] !== false);
+}
+
+ZEngine.Input.CursorType = function(type)
+{
+	document.body.style.cursor = type;
+}
+
+ZEngine.Input.MouseOver = function(Other)
+{
+	return ZEngine.RectOverlapping([ZEngine.Input.MousePosition[0]-1, ZEngine.Input.MousePosition[1]-1, ZEngine.Input.MousePosition[0]+1, ZEngine.Input.MousePosition[1]+1], Other);
+}
+
+ZEngine.Input.GetMousePosition = function(evt){
+    var rect = ZEngine.Canvas.getBoundingClientRect();
+    return [
+      evt.clientX - rect.left,
+      evt.clientY - rect.top
+	]
 }
 
 ZEngine.ObjectsWithComponent = function(Str, IgnoreObject){
@@ -242,6 +269,13 @@ ZEngine.OrderByLayer = function(Objects){
 }
 
 // Special
+ZEngine.Sin = function(Amount, Variance, Progress)
+{
+	if(Progress > Math.PI)
+		Progress = Progress - Math.PI;
+	return Amount + (Variance * Math.sin(Progress));
+}
+
 ZEngine.Wait = function(WaitTime, Callback){
 	setTimeout(Callback, WaitTime);
 }
@@ -813,6 +847,8 @@ class ZEngineScene
 
 	Run()
 	{
+		ZEngine.Input.CursorType("default");
+
 		if(ZEngineScene.Get(ZEngineScene.CurrentScene) != null)
 			ZEngineScene.Get(ZEngineScene.CurrentScene).Destruct();
 
